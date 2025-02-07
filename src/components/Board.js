@@ -4,7 +4,8 @@ import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
 import FinalMusic from '../resources/final_jeopardy.mp3';
-import { forwardRef, useContext, useImperativeHandle } from 'react';
+import Timeout from '../resources/timeout.mp3';
+import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
 import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
 
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
@@ -18,6 +19,7 @@ const Board = forwardRef((props, ref) => {
         setMessageLines, availableClueNumbers,
         player, showData, setScores, enterFullScreen,
         msg, response, setResponseTimerIsActive } = props;
+    const buzzerTimeoutRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
         displayClueByNumber
@@ -114,6 +116,10 @@ const Board = forwardRef((props, ref) => {
     }
 
     function answer(row, col) {
+        if (buzzerTimeoutRef.current !== undefined) {
+            clearTimeout(buzzerTimeoutRef.current);
+            buzzerTimeoutRef.current = null;
+        }
         gameInfoContext.dispatch({ type: 'disable_player_answer' });
         setResponseTimerIsActive(false);
         let bonusProbability = 0;
@@ -327,6 +333,11 @@ const Board = forwardRef((props, ref) => {
                 concede(row, col);
             } else if (board[col][row].visible === 'clue') {
                 setBoardState(row, col, 'buzzer');
+                if (isTripleStumper(row, col)) {
+                    let timeout = new Audio(Timeout);
+                    buzzerTimeoutRef.current = setTimeout(() => timeout.play(), 5000);
+                }
+                
             }
             setResponseTimerIsActive(true);
             msg.removeEventListener('end', clearClue, true);

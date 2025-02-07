@@ -11,7 +11,7 @@ function Podium() {
     const ticksList = ticks.map((_tick, index) =>
         <span key={'tick' + index} className='tick'></span>);
 
-    // 4 second countdown to respond after player's name is called
+    // 5 second countdown to respond after player's name is called
     useEffect(() => {
         let responseCountdownInterval = {};
         let timeout = new Audio(Timeout);
