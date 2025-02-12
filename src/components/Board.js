@@ -101,7 +101,9 @@ const Board = forwardRef((props, ref) => {
         setBoardState(row, col, 'closed');
         setResponseTimerIsActive(false);
         player.conceded = true;
-        // updateOpponentScores(row, col);
+        if (isContestantsDailyDouble(board[col][row], gameInfoContext.state.lastCorrect)) {
+            updateOpponentScores(row, col);
+        }
         if (gameInfoContext.state.lastCorrect === player.name) {
             setDisableClue(false);
         }
@@ -120,22 +122,33 @@ const Board = forwardRef((props, ref) => {
         }, 500);
     }
 
-    function opponentAnswer(row, col) {
-        let incorrectContestants = board[col][row].response.incorrect_contestants
-            .filter(contestant => contestant !== gameInfoContext.state.weakest)
-            .filter(contestant => !answered.includes(contestant));
-        const responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
+    function handleOpponentAnswer(row, col, incorrectContestants, attempt) {
+        let responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
+        if (attempt === 2) {
+            responseTime += 1200;
+        }
         console.log('opponent response time (ms): ' + responseTime);
         opponentTimerRef.current = setTimeout(() => {
             if (board[col][row].visible === 'closed') {
                 setMessageLines(board[col][row].response.correct_response);
-            } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
+            } else if ((attempt === 2  || incorrectContestants.length === 0) && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
                 readText(board[col][row].response.correct_contestant);
             } else if (incorrectContestants.length > 0) {
                 readText(incorrectContestants[0]);
             }
             updateOpponentScores(row, col);
         }, responseTime);
+    }
+
+    function opponentAnswer(row, col) {
+        let incorrectContestants = board[col][row].response.incorrect_contestants
+            .filter(contestant => contestant !== gameInfoContext.state.weakest)
+            .filter(contestant => !answered.includes(contestant));
+        handleOpponentAnswer(row, col, incorrectContestants, 1);
+        // if both opponents answered, start another timer for the second contestant
+        if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest)) {
+            handleOpponentAnswer(row, col, incorrectContestants, 2);
+        }
     }
 
     function playerAnswer(row, col) {
@@ -153,38 +166,6 @@ const Board = forwardRef((props, ref) => {
         setBoardState(row, col, 'eye');
         clearInterval(response.interval);
         clearTimeout(opponentTimerRef.current);
-    }
-
-    function answer(row, col) {
-        if (buzzerTimeoutRef.current !== undefined) {
-            clearTimeout(buzzerTimeoutRef.current);
-            buzzerTimeoutRef.current = null;
-        }
-        gameInfoContext.dispatch({ type: 'disable_player_answer' });
-        setResponseTimerIsActive(false);
-        let bonusProbability = 0;
-        let incorrectContestants = board[col][row].response.incorrect_contestants
-            .filter(contestant => contestant !== gameInfoContext.state.weakest)
-            .filter(contestant => !answered.includes(contestant));
-        if (answered.length === 1) {
-            bonusProbability = 0.166; // increase the probability of a successful buzz-in if a contestant has already answered this clue
-        }
-        const probability = getProbability(board[col][row].value, gameInfoContext.state.round, bonusProbability);
-        if (response.seconds < 3 && (answered.length === 2 || isFastestResponse(response.seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
-            readText(playerName);
-            response.countdown = true;
-            setBoardState(row, col, 'eye');
-        } else {
-            if (board[col][row].visible === 'closed') {
-                setMessageLines(board[col][row].response.correct_response);
-            } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
-                readText(board[col][row].response.correct_contestant);
-            } else if (incorrectContestants.length > 0) {
-                readText(incorrectContestants[0]);
-            }
-            updateOpponentScores(row, col);
-        }
-        clearInterval(response.interval);
     }
 
     function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
@@ -458,74 +439,6 @@ const Board = forwardRef((props, ref) => {
             }
         }
         return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-
-    function getProbability(value, round, bonusProbability) {
-        if (round <= 1) {
-            switch (value) {
-                case 200:
-                    return 0.424 + bonusProbability; //120-250ms
-                case 400:
-                    return 0.492 + bonusProbability; //120-270ms
-                case 600:
-                    return 0.500 + bonusProbability; //120-290ms
-                case 800:
-                    return 0.541 + bonusProbability; //120-310ms
-                case 1000:
-                    return 0.636 + bonusProbability; //120-330ms
-                default:
-                    return 0;
-            }
-        } else if (round === 2) {
-            switch (value) {
-                case 400:
-                    return 0.452 + bonusProbability; //120-280ms
-                case 800:
-                    return 0.535 + bonusProbability; //120-310ms
-                case 1200:
-                    return 0.563 + bonusProbability; //120-330ms
-                case 1600:
-                    return 0.623 + bonusProbability; //120-350ms
-                case 2000:
-                    return 0.704 + bonusProbability; //120-370ms
-                default:
-                    return 0;
-            }
-        }
-    }
-
-    function isFastestResponse(seconds, probability) {
-        const randomNumber = Math.random();
-        seconds %= 5;
-        console.log('seconds: ' + seconds);
-        console.log('randomNumber: ' + randomNumber);
-        let adjustedProbability;
-        if (seconds <= 0.1) {
-            adjustedProbability = Math.pow(probability, 0.5);
-        } else if (seconds <= 0.2) {
-            adjustedProbability = probability;
-        } else if (seconds <= 0.4) {
-            adjustedProbability = Math.pow(probability, 2);
-        } else if (seconds <= 0.6) {
-            adjustedProbability = Math.pow(probability, 3);
-        } else if (seconds <= 0.8) {
-            adjustedProbability = Math.pow(probability, 4);
-        } else if (seconds <= 1) {
-            adjustedProbability = Math.pow(probability, 5);
-        } else if (seconds <= 1.25) {
-            adjustedProbability = Math.pow(probability, 6);
-        } else if (seconds <= 1.5) {
-            adjustedProbability = Math.pow(probability, 7);
-        } else if (seconds <= 1.75) {
-            adjustedProbability = Math.pow(probability, 8);
-        } else if (seconds <= 2) {
-            adjustedProbability = Math.pow(probability, 9);
-        } else if (seconds < 3) {
-            adjustedProbability = Math.pow(probability, 10);
-        }
-        console.log('adjusted probablility: ' + adjustedProbability);
-        console.log(randomNumber <= adjustedProbability);
-        return randomNumber <= adjustedProbability;
     }
 
     function incrementScore(row, col) {
