@@ -99,7 +99,7 @@ const Board = forwardRef((props, ref) => {
         setBoardState(row, col, 'closed');
         setResponseTimerIsActive(false);
         player.conceded = true;
-        updateOpponentScores(row, col);
+        // updateOpponentScores(row, col);
         if (gameInfoContext.state.lastCorrect === player.name) {
             setDisableClue(false);
         }
@@ -335,7 +335,10 @@ const Board = forwardRef((props, ref) => {
                 setBoardState(row, col, 'buzzer');
                 if (isTripleStumper(row, col)) {
                     let timeout = new Audio(Timeout);
-                    buzzerTimeoutRef.current = setTimeout(() => timeout.play(), 5000);
+                    buzzerTimeoutRef.current = setTimeout(() => {
+                        timeout.play();
+                        concede(row, col);
+                    }, 5000);
                 }
                 
             }
