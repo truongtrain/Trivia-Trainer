@@ -103,12 +103,11 @@ const Board = forwardRef((props, ref) => {
         player.conceded = true;
         if (isContestantsDailyDouble(board[col][row], gameInfoContext.state.lastCorrect)) {
             updateOpponentScores(row, col);
+        } else if (opponentControlsBoard()) {
+            setTimeout(() => displayNextClue(), 2000);
         }
         if (gameInfoContext.state.lastCorrect === player.name) {
             setDisableClue(false);
-        }
-        if (opponentControlsBoard()) {
-            setTimeout(() => displayNextClue(), 2000);
         }
     }
 
@@ -379,15 +378,6 @@ const Board = forwardRef((props, ref) => {
 
     function isContestantsDailyDouble(clue, contestant) {
         return clue.response.correct_contestant === contestant || clue.response.incorrect_contestants.includes(contestant);
-    }
-
-    function noAttempts(row, col) {
-        return isTripleStumper(row, col) && board[col][row].response.incorrect_contestants.length === 0;
-    }
-
-    function noOpponentAttemptsRemaining(row, col) {
-        const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== gameInfoContext.state.weakest);
-        return answered.length === incorrectContestants.length && isTripleStumper(row, col);
     }
 
     function isTripleStumper(row, col) {
