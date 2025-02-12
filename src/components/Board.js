@@ -105,6 +105,9 @@ const Board = forwardRef((props, ref) => {
         if (gameInfoContext.state.lastCorrect === player.name) {
             setDisableClue(false);
         }
+        if (opponentControlsBoard) {
+            setTimeout(() => displayNextClue(), 2000);
+        }
     }
 
     function readText(text) {
