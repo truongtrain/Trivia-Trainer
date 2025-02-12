@@ -105,7 +105,7 @@ const Board = forwardRef((props, ref) => {
         if (gameInfoContext.state.lastCorrect === player.name) {
             setDisableClue(false);
         }
-        if (opponentControlsBoard) {
+        if (opponentControlsBoard()) {
             setTimeout(() => displayNextClue(), 2000);
         }
     }
@@ -298,6 +298,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function opponentControlsBoard() {
+        console.log('lastCorrect: ' + gameInfoContext.state.lastCorrect);
         return gameInfoContext.state.lastCorrect !== player.name;
     }
 
