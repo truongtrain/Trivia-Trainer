@@ -8,7 +8,7 @@ import Timeout from '../resources/timeout.mp3';
 import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
 import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
 
-let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
+let stats = { numCorrect: 0, numClues: 0, battingAverage: 0, coryatScore: 0, totalClickResponseTime: 0, numClicks: 0, averageClickResponseTime: 0 };
 let answered = [];
 
 const Board = forwardRef((props, ref) => {
@@ -20,6 +20,7 @@ const Board = forwardRef((props, ref) => {
         player, showData, setScores, enterFullScreen,
         msg, response, setResponseTimerIsActive } = props;
     const buzzerTimeoutRef = useRef(null);
+    const opponentTimerRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
         displayClueByNumber
@@ -96,6 +97,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function concede(row, col) {
+        setMessageLines(board[col][row].response.correct_response);
         setBoardState(row, col, 'closed');
         setResponseTimerIsActive(false);
         player.conceded = true;
@@ -113,6 +115,41 @@ const Board = forwardRef((props, ref) => {
             gameInfoContext.dispatch({ type: 'enable_player_answer' });
             setResponseTimerIsActive(true);
         }, 500);
+    }
+
+    function opponentAnswer(row, col) {
+        let incorrectContestants = board[col][row].response.incorrect_contestants
+            .filter(contestant => contestant !== gameInfoContext.state.weakest)
+            .filter(contestant => !answered.includes(contestant));
+        const responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
+        console.log('opponent response time (ms): ' + responseTime);
+        opponentTimerRef.current = setTimeout(() => {
+            if (board[col][row].visible === 'closed') {
+                setMessageLines(board[col][row].response.correct_response);
+            } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
+                readText(board[col][row].response.correct_contestant);
+            } else if (incorrectContestants.length > 0) {
+                readText(incorrectContestants[0]);
+            }
+            updateOpponentScores(row, col);
+        }, responseTime);
+    }
+
+    function playerAnswer(row, col) {
+        console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
+        stats.numClicks += 1;
+        stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
+        if (buzzerTimeoutRef.current !== undefined) {
+            clearTimeout(buzzerTimeoutRef.current);
+            buzzerTimeoutRef.current = null;
+        }
+        gameInfoContext.dispatch({ type: 'disable_player_answer' });
+        setResponseTimerIsActive(false);
+        readText(playerName);
+        response.countdown = true;
+        setBoardState(row, col, 'eye');
+        clearInterval(response.interval);
+        clearTimeout(opponentTimerRef.current);
     }
 
     function answer(row, col) {
@@ -339,6 +376,8 @@ const Board = forwardRef((props, ref) => {
                         timeout.play();
                         concede(row, col);
                     }, 5000);
+                } else {
+                    opponentAnswer(row, col);
                 }
                 
             }
@@ -370,34 +409,81 @@ const Board = forwardRef((props, ref) => {
         return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
     }
 
+    function getOpponentResponseTime(value, round) {
+        const min = 120; // in milliseconds
+        let max;
+        if (round <= 1) {
+            switch (value) {
+                case 200:
+                    max = 250; // 120-250ms
+                    break;
+                case 400:
+                    max = 270; // 120-270ms
+                    break;
+                case 600:
+                    max = 290; // 120-290ms
+                    break;
+                case 800:
+                    max = 310; // 120-310ms
+                    break;
+                case 1000:
+                    max = 330; // 120-330ms
+                    break;
+                default:
+                    max = 290;
+            }
+        } else if (round === 2) {
+            switch (value) {
+                case 400:
+                    max = 280; // 120-280ms
+                    break;
+                case 800:
+                    max = 310; // 120-310ms
+                    break;
+                case 1200:
+                    max = 330; // 120-330ms
+                    break;
+                case 1600:
+                    max = 350; // 120-350ms
+                    break;
+                case 2000:
+                    max = 370; // 120-370ms    
+                    break;   
+                default:
+                    max = 330;      
+            }
+        }
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
     function getProbability(value, round, bonusProbability) {
         if (round <= 1) {
             switch (value) {
                 case 200:
-                    return 0.424 + bonusProbability;
+                    return 0.424 + bonusProbability; //120-250ms
                 case 400:
-                    return 0.492 + bonusProbability;
+                    return 0.492 + bonusProbability; //120-270ms
                 case 600:
-                    return 0.500 + bonusProbability;
+                    return 0.500 + bonusProbability; //120-290ms
                 case 800:
-                    return 0.541 + bonusProbability;
+                    return 0.541 + bonusProbability; //120-310ms
                 case 1000:
-                    return 0.636 + bonusProbability;
+                    return 0.636 + bonusProbability; //120-330ms
                 default:
                     return 0;
             }
         } else if (round === 2) {
             switch (value) {
                 case 400:
-                    return 0.452 + bonusProbability;
+                    return 0.452 + bonusProbability; //120-280ms
                 case 800:
-                    return 0.535 + bonusProbability;
+                    return 0.535 + bonusProbability; //120-310ms
                 case 1200:
-                    return 0.563 + bonusProbability;
+                    return 0.563 + bonusProbability; //120-330ms
                 case 1600:
-                    return 0.623 + bonusProbability;
+                    return 0.623 + bonusProbability; //120-350ms
                 case 2000:
-                    return 0.704 + bonusProbability;
+                    return 0.704 + bonusProbability; //120-370ms
                 default:
                     return 0;
             }
@@ -515,6 +601,7 @@ const Board = forwardRef((props, ref) => {
 
     function showFinalJeopardyResults() {
         stats.battingAverage = stats.numCorrect / stats.numClues * 1.0;
+        stats.averageClickResponseTime = stats.totalClickResponseTime / stats.numClicks;
         console.log(stats);
         scores[playerName].response = player.finalResponse;
         scores[playerName].wager = player.wager;
@@ -565,7 +652,7 @@ const Board = forwardRef((props, ref) => {
                                 <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                                 {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                                     <div className='clue'>
-                                        <button className='answer-button buzzer-button' onClick={() => answer(row, column)} disabled={gameInfoContext.state.disableAnswer}><HiHandRaised /></button>
+                                        <button className='answer-button buzzer-button' onClick={() => playerAnswer(row, column)} disabled={gameInfoContext.state.disableAnswer}><HiHandRaised /></button>
                                         <button className='answer-button flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                                     </div>
                                 }
