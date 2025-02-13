@@ -390,42 +390,42 @@ const Board = forwardRef((props, ref) => {
         if (round <= 1) {
             switch (value) {
                 case 200:
-                    max = 250; // 120-250ms
+                    max = 200; // 120-200ms
                     break;
                 case 400:
-                    max = 270; // 120-270ms
+                    max = 210; // 120-210ms
                     break;
                 case 600:
-                    max = 290; // 120-290ms
+                    max = 220; // 120-220ms
                     break;
                 case 800:
-                    max = 310; // 120-310ms
+                    max = 230; // 120-230ms
                     break;
                 case 1000:
-                    max = 330; // 120-330ms
+                    max = 240; // 120-240ms
                     break;
                 default:
-                    max = 290;
+                    max = 220;
             }
         } else if (round === 2) {
             switch (value) {
                 case 400:
-                    max = 280; // 120-280ms
+                    max = 220; // 120-220ms
                     break;
                 case 800:
-                    max = 310; // 120-310ms
+                    max = 230; // 120-230ms
                     break;
                 case 1200:
-                    max = 330; // 120-330ms
+                    max = 240; // 120-240ms
                     break;
                 case 1600:
-                    max = 350; // 120-350ms
+                    max = 250; // 120-250ms
                     break;
                 case 2000:
-                    max = 370; // 120-370ms    
+                    max = 260; // 120-260ms    
                     break;   
                 default:
-                    max = 330;      
+                    max = 240;      
             }
         }
         return Math.floor(Math.random() * (max - min + 1) + min);
