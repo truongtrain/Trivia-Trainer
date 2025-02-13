@@ -560,7 +560,6 @@ const Board = forwardRef((props, ref) => {
                                 {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                                     <div className='clue'>
                                         <button className='answer-button buzzer-button' onClick={() => playerAnswer(row, column)} disabled={gameInfoContext.state.disableAnswer}><HiHandRaised /></button>
-                                        <button className='answer-button flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                                     </div>
                                 }
                                 {category[row].visible === 'eye' &&
