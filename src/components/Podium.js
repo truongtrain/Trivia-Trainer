@@ -14,12 +14,11 @@ function Podium() {
     // 5 second countdown to respond after player's name is called
     useEffect(() => {
         let responseCountdownInterval = {};
-        let timeout = new Audio(Timeout);
-        let responseCountdown = 4;
         if (startTimer) {
+            let timeout = new Audio(Timeout);
+            let responseCountdown = 4;
             responseCountdownInterval = setInterval(() => {
                 if (responseCountdown === 0) {
-                    clearInterval(responseCountdownInterval);
                     timeout.play();
                 } else {
                     setTicks(new Array(responseCountdown * 2 - 1).fill(true));
@@ -29,7 +28,9 @@ function Podium() {
         } else {
             setTicks(new Array(9).fill(true));
         }
-        return () => clearInterval(responseCountdownInterval);
+        return () => {
+            clearInterval(responseCountdownInterval);
+        }
     }, [startTimer]);
 
     function isActivePlayerPodium(name) {

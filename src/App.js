@@ -60,7 +60,7 @@ const App = () => {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/9079')
+    fetch('http://localhost:5000/game/9141')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -77,10 +77,10 @@ const App = () => {
   useEffect(() => {
     if (responseTimerIsActive) {
       response.interval = setInterval(() => response.seconds += 0.01, 10);
-    } else {
+    }
+    return () => {
       clearInterval(response.interval);
     }
-    return () => clearInterval(response.interval);
   }, [responseTimerIsActive]);
 
   function loadBoard(playerNameParam) {
