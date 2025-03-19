@@ -361,17 +361,7 @@ const Board = forwardRef((props, ref) => {
                     timeout.play();
                     concede(row, col);
                 }, 5000);
-                opponentAnswer(row, col);
-                // if (isNoAttempts(row, col)) {
-                //     let timeout = new Audio(Timeout);
-                //     buzzerTimeoutRef.current = setTimeout(() => {
-                //         timeout.play();
-                //         concede(row, col);
-                //     }, 5000);
-                // } else {
-                //     opponentAnswer(row, col);
-                // }
-             
+                opponentAnswer(row, col);            
             }
             setResponseTimerIsActive(true);
             msg.removeEventListener('end', clearClue, true);
@@ -390,11 +380,6 @@ const Board = forwardRef((props, ref) => {
 
     function isTripleStumper(row, col) {
         return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
-    }
-
-    function isNoAttempts(row, col) {
-        let incorrectContestants = board[col][row].response.incorrect_contestants;
-        return incorrectContestants.length === 0 || (incorrectContestants.length === 1 && incorrectContestants[0] === gameInfoContext.state.weakest);
     }
 
     function getOpponentResponseTime(value, round) {
