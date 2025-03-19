@@ -150,14 +150,17 @@ const Board = forwardRef((props, ref) => {
         }
     }
 
-    function playerAnswer(row, col) {
-        console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
-        stats.numClicks += 1;
-        stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
+    function clearBuzzerTimeout() {
         if (buzzerTimeoutRef.current !== undefined) {
             clearTimeout(buzzerTimeoutRef.current);
             buzzerTimeoutRef.current = null;
         }
+    }
+
+    function playerAnswer(row, col) {
+        console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
+        stats.numClicks += 1;
+        stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
         gameInfoContext.dispatch({ type: 'disable_player_answer' });
         setResponseTimerIsActive(false);
         readText(playerName);
@@ -191,6 +194,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
+        clearBuzzerTimeout();
         if (correctContestant && scores[correctContestant]) {
             gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
             scores[correctContestant].score += scoreChange;
@@ -264,8 +268,6 @@ const Board = forwardRef((props, ref) => {
         } else if (!correctContestant) {
             if (incorrectContestants.length > 0) {
                 handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            } else {
-                setMessageLines(clue.response.correct_response);
             }
             // go to next clue selected by opponent
             if (nextClueNumber > 0 && opponentControlsBoard()) {
@@ -354,16 +356,22 @@ const Board = forwardRef((props, ref) => {
                 concede(row, col);
             } else if (board[col][row].visible === 'clue') {
                 setBoardState(row, col, 'buzzer');
-                if (isTripleStumper(row, col)) {
-                    let timeout = new Audio(Timeout);
-                    buzzerTimeoutRef.current = setTimeout(() => {
-                        timeout.play();
-                        concede(row, col);
-                    }, 5000);
-                } else {
-                    opponentAnswer(row, col);
-                }
-                
+                let timeout = new Audio(Timeout);
+                buzzerTimeoutRef.current = setTimeout(() => {
+                    timeout.play();
+                    concede(row, col);
+                }, 5000);
+                opponentAnswer(row, col);
+                // if (isNoAttempts(row, col)) {
+                //     let timeout = new Audio(Timeout);
+                //     buzzerTimeoutRef.current = setTimeout(() => {
+                //         timeout.play();
+                //         concede(row, col);
+                //     }, 5000);
+                // } else {
+                //     opponentAnswer(row, col);
+                // }
+             
             }
             setResponseTimerIsActive(true);
             msg.removeEventListener('end', clearClue, true);
@@ -382,6 +390,11 @@ const Board = forwardRef((props, ref) => {
 
     function isTripleStumper(row, col) {
         return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
+    }
+
+    function isNoAttempts(row, col) {
+        let incorrectContestants = board[col][row].response.incorrect_contestants;
+        return incorrectContestants.length === 0 || (incorrectContestants.length === 1 && incorrectContestants[0] === gameInfoContext.state.weakest);
     }
 
     function getOpponentResponseTime(value, round) {
@@ -432,6 +445,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function incrementScore(row, col) {
+        clearBuzzerTimeout();
         setDisableClue(false);
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         msg.text = 'Correct';
