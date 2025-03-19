@@ -130,7 +130,6 @@ const Board = forwardRef((props, ref) => {
         }
         console.log('opponent response time (ms): ' + responseTime);
         opponentTimerRef.current = setTimeout(() => {
-            console.log(opponentTimerRef);
             if (board[col][row].visible === 'closed') {
                 setMessageLines(board[col][row].response.correct_response);
             } else if ((attempt === 2  || incorrectContestants.length === 0) && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
@@ -140,7 +139,6 @@ const Board = forwardRef((props, ref) => {
             }
             updateOpponentScores(row, col);
         }, responseTime);
-        console.log(opponentTimerRef)
     }
 
     function opponentAnswer(row, col) {
@@ -163,7 +161,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function clearOpponentTimer() {
-        console.log(opponentTimerRef);
         if (opponentTimerRef.current) {
             clearTimeout(opponentTimerRef.current);
             opponentTimerRef.current = null;
