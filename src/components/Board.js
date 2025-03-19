@@ -97,6 +97,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function concede(row, col) {
+        clearBuzzerTimeout();
         setMessageLines(board[col][row].response.correct_response);
         setBoardState(row, col, 'closed');
         setResponseTimerIsActive(false);
@@ -148,6 +149,7 @@ const Board = forwardRef((props, ref) => {
         if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest)) {
             handleOpponentAnswer(row, col, incorrectContestants, 2);
         }
+
     }
 
     function clearBuzzerTimeout() {
@@ -361,7 +363,9 @@ const Board = forwardRef((props, ref) => {
                     timeout.play();
                     concede(row, col);
                 }, 5000);
-                opponentAnswer(row, col);            
+                if (!hasNoAttempts(row, col)) {
+                    opponentAnswer(row, col);            
+                }
             }
             setResponseTimerIsActive(true);
             msg.removeEventListener('end', clearClue, true);
@@ -380,6 +384,11 @@ const Board = forwardRef((props, ref) => {
 
     function isTripleStumper(row, col) {
         return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
+    }
+
+    function hasNoAttempts(row, col) {
+        return isTripleStumper(row, col) && (board[col][row].response.incorrect_contestants.length === 0 || 
+            (board[col][row].response.incorrect_contestants.length === 1 && board[col][row].response.incorrect_contestants[0] === gameInfoContext.state.weakest));
     }
 
     function getOpponentResponseTime(value, round) {
