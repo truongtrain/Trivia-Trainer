@@ -317,7 +317,6 @@ const Board = forwardRef((props, ref) => {
             // go to next clue selected by opponent
             if (nextClueInfo.nextClueNumber > 0 && opponentControlsBoard()) {
                 setTimeout(() => setMessageLines(nextClueInfo.message), 2500);
-                console.log('display 312')
                 setTimeout(() => displayNextClue(), 4500);
             }
         } else { // no incorrect responses
@@ -326,7 +325,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function opponentControlsBoard() {
-        console.log('lastCorrect: ' + gameInfoContext.state.lastCorrect);
         return gameInfoContext.state.lastCorrect !== player.name;
     }
 
