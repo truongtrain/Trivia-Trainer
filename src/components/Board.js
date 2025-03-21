@@ -113,16 +113,16 @@ const Board = forwardRef((props, ref) => {
         clearBuzzerTimeout();
         setMessageLines(board[col][row].response.correct_response);
         if (opponentControlsBoard()) {
-            let message = getNextClueInfo().message;
-            if (message) {
-                setTimeout(() => setMessageLines(message), 2000);
+            let clueSelectionMessage = getNextClueInfo().message;
+            if (clueSelectionMessage) {
+                setTimeout(() => setMessageLines(clueSelectionMessage), 2000);
             }        
         }  
         setBoardState(row, col, 'closed');
         setResponseTimerIsActive(false);
         player.conceded = true;
         if (isContestantsDailyDouble(board[col][row], gameInfoContext.state.lastCorrect)) {
-            updateOpponentScores(row, col, 1);
+            updateOpponentScores(row, col);
         } else if (opponentControlsBoard()) {
             setTimeout(() => displayNextClue(), 4000);
         }
@@ -151,7 +151,7 @@ const Board = forwardRef((props, ref) => {
             } else if (board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {              
                 readText(board[col][row].response.correct_contestant);             
             }
-            updateOpponentScores(row, col, attempt);
+            updateOpponentScores(row, col);
         }, responseTime);
     }
 
@@ -291,7 +291,7 @@ const Board = forwardRef((props, ref) => {
         return clue.daily_double_wager;
     }
 
-    function updateOpponentScores(row, col, attempt) {
+    function updateOpponentScores(row, col) {
         const clue = board[col][row];
         // don't update opponent score if this is the player's daily double
         if (isPlayerDailyDouble(row, col)) {
