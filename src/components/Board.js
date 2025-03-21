@@ -159,9 +159,12 @@ const Board = forwardRef((props, ref) => {
         } 
     }
 
-    function startBuzzerTimeout(row, col) {
+    function startBuzzerTimeout(row, col, isPlayerAnswer = false) {
         let timeout = new Audio(Timeout);
         buzzerTimeoutRef.current = setTimeout(() => {
+            if (isPlayerAnswer) {
+                deductScore(row, col);
+            }
             timeout.play();
             concede(row, col);
         }, 5000);
@@ -188,7 +191,7 @@ const Board = forwardRef((props, ref) => {
     function playerAnswer(row, col) {
         clearOpponentTimer();
         clearBuzzerTimeout();
-        startBuzzerTimeout(row, col);
+        startBuzzerTimeout(row, col, true);
         console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
         stats.numClicks += 1;
         stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
