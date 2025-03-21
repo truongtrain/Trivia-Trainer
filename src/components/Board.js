@@ -344,11 +344,6 @@ const Board = forwardRef((props, ref) => {
     function getNextClueNumber() {
         for (let i = 1; i <= 30; i++) {
             if (availableClueNumbers[i - 1] === true) {
-                const clue = getClue(i);
-                // if this is a daily double that was not answered by the contestant in the televised game, skip this clue
-                if (clue && clue.daily_double_wager > 0 && !isContestantsDailyDouble(clue, gameInfoContext.state.lastCorrect)) {
-                    continue;
-                }
                 return i;
             }
         }
