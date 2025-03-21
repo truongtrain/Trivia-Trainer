@@ -105,6 +105,7 @@ const Board = forwardRef((props, ref) => {
         if (isContestantsDailyDouble(board[col][row], gameInfoContext.state.lastCorrect)) {
             updateOpponentScores(row, col);
         } else if (opponentControlsBoard()) {
+            console.log('display 108')
             setTimeout(() => displayNextClue(), 2000);
         }
         if (gameInfoContext.state.lastCorrect === player.name) {
@@ -162,11 +163,12 @@ const Board = forwardRef((props, ref) => {
     function startBuzzerTimeout(row, col, isPlayerAnswer = false) {
         let timeout = new Audio(Timeout);
         buzzerTimeoutRef.current = setTimeout(() => {
+            timeout.play();    
             if (isPlayerAnswer) {
                 deductScore(row, col);
-            }
-            timeout.play();
-            concede(row, col);
+            } else if (isTripleStumper(row, col)) {
+                concede(row, col);
+            }   
         }, 5000);
         console.log('start timer ID: ' + buzzerTimeoutRef.current);
     }
@@ -242,6 +244,7 @@ const Board = forwardRef((props, ref) => {
                 setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
             }, 2000);
             response.seconds = 0;
+            console.log('display 246')
             setTimeout(() => displayNextClue(), 4000);
         }
     }
@@ -307,6 +310,7 @@ const Board = forwardRef((props, ref) => {
             // go to next clue selected by opponent
             if (nextClueNumber > 0 && opponentControlsBoard()) {
                 setTimeout(() => setMessageLines(message), 2500);
+                console.log('display 312')
                 setTimeout(() => displayNextClue(), 4500);
             }
         } else { // no incorrect responses
