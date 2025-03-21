@@ -149,6 +149,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function opponentAnswer(row, col) {
+        clearBuzzerTimeout();
         let incorrectContestants = board[col][row].response.incorrect_contestants
             .filter(contestant => contestant !== gameInfoContext.state.weakest)
             .filter(contestant => !answered.includes(contestant));
@@ -157,6 +158,14 @@ const Board = forwardRef((props, ref) => {
         if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest)) {
             handleOpponentAnswer(row, col, incorrectContestants, 2);
         } 
+    }
+
+    function startBuzzerTimeout(row, col) {
+        let timeout = new Audio(Timeout);
+        buzzerTimeoutRef.current = setTimeout(() => {
+            timeout.play();
+            concede(row, col);
+        }, 5000);
     }
 
     function clearBuzzerTimeout() {
@@ -180,6 +189,7 @@ const Board = forwardRef((props, ref) => {
     function playerAnswer(row, col) {
         clearOpponentTimer();
         clearBuzzerTimeout();
+        startBuzzerTimeout(row, col);
         console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
         stats.numClicks += 1;
         stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
@@ -377,11 +387,7 @@ const Board = forwardRef((props, ref) => {
                 concede(row, col);
             } else if (board[col][row].visible === 'clue') {
                 setBoardState(row, col, 'buzzer');
-                let timeout = new Audio(Timeout);
-                buzzerTimeoutRef.current = setTimeout(() => {
-                    timeout.play();
-                    concede(row, col);
-                }, 5000);
+                startBuzzerTimeout(row, col);
                 if (!hasNoAttempts(row, col)) {
                     opponentAnswer(row, col);            
                 }
@@ -458,6 +464,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function incrementScore(row, col) {
+        clearBuzzerTimeout();
         setDisableClue(false);
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         msg.text = 'Correct';
