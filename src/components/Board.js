@@ -149,7 +149,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function opponentAnswer(row, col) {
-        clearBuzzerTimeout();
         let incorrectContestants = board[col][row].response.incorrect_contestants
             .filter(contestant => contestant !== gameInfoContext.state.weakest)
             .filter(contestant => !answered.includes(contestant));
