@@ -192,7 +192,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function clearBuzzerTimeout() {
-        if (buzzerTimeoutRef.current !== undefined) {
+        if (buzzerTimeoutRef.current) {
             clearTimeout(buzzerTimeoutRef.current);
             buzzerTimeoutRef.current = null;
         }
