@@ -2,7 +2,6 @@ import { BiShow } from 'react-icons/bi';
 import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
-import { BsFillFlagFill } from 'react-icons/bs';
 import FinalMusic from '../resources/final_jeopardy.mp3';
 import Timeout from '../resources/timeout.mp3';
 import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
@@ -20,7 +19,8 @@ const Board = forwardRef((props, ref) => {
         player, showData, setScores, enterFullScreen,
         msg, response, setResponseTimerIsActive } = props;
     const buzzerTimeoutRef = useRef(null);
-    const opponentTimerRef = useRef(null);
+    const opponent1TimerRef = useRef(null);
+    const opponent2TimerRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
         displayClueByNumber
@@ -96,15 +96,35 @@ const Board = forwardRef((props, ref) => {
         return gameInfoContext.state.lastCorrect === player.name && board[col][row].daily_double_wager > 0;
     }
 
+    function getNextClueInfo() {
+        const nextClueNumber = getNextClueNumber();
+        let message;
+        let nextClue;
+        if (nextClueNumber > 0) {
+            nextClue = getClue(nextClueNumber);
+        }
+        if (nextClue) {
+            message = gameInfoContext.state.lastCorrect + ': ' + nextClue.category + ' for $' + nextClue.value;
+        }
+        return { nextClueNumber: nextClueNumber, nextClue: nextClue, message: message};
+    }
+
     function concede(row, col) {
+        clearBuzzerTimeout();
         setMessageLines(board[col][row].response.correct_response);
+        if (opponentControlsBoard()) {
+            let clueSelectionMessage = getNextClueInfo().message;
+            if (clueSelectionMessage) {
+                setTimeout(() => setMessageLines(clueSelectionMessage), 2000);
+            }        
+        }  
         setBoardState(row, col, 'closed');
         setResponseTimerIsActive(false);
         player.conceded = true;
         if (isContestantsDailyDouble(board[col][row], gameInfoContext.state.lastCorrect)) {
             updateOpponentScores(row, col);
         } else if (opponentControlsBoard()) {
-            setTimeout(() => displayNextClue(), 2000);
+            setTimeout(() => displayNextClue(), 4000);
         }
         if (gameInfoContext.state.lastCorrect === player.name) {
             setDisableClue(false);
@@ -121,22 +141,31 @@ const Board = forwardRef((props, ref) => {
         }, 500);
     }
 
+    function getOpponentTimer(row, col, attempt, responseTime, incorrectContestants) {
+        return setTimeout(() => {
+            if (board[col][row].visible === 'closed') {
+                setMessageLines(board[col][row].response.correct_response);    
+            } else if (incorrectContestants.length > attempt - 1) {
+                readText(incorrectContestants[attempt - 1]);
+                setMessageLines(board[col][row].response.incorrect_responses[attempt - 1]);
+            } else if (board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {              
+                readText(board[col][row].response.correct_contestant);             
+            }
+            updateOpponentScores(row, col);
+        }, responseTime);
+    }
+
     function handleOpponentAnswer(row, col, incorrectContestants, attempt) {
         let responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
         if (attempt === 2) {
             responseTime += 1200;
         }
         console.log('opponent response time (ms): ' + responseTime);
-        opponentTimerRef.current = setTimeout(() => {
-            if (board[col][row].visible === 'closed') {
-                setMessageLines(board[col][row].response.correct_response);
-            } else if ((attempt === 2  || incorrectContestants.length === 0) && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
-                readText(board[col][row].response.correct_contestant);
-            } else if (incorrectContestants.length > 0) {
-                readText(incorrectContestants[0]);
-            }
-            updateOpponentScores(row, col);
-        }, responseTime);
+        if (attempt === 1) {
+            opponent1TimerRef.current = getOpponentTimer(row, col, attempt, responseTime, incorrectContestants);
+        } else if (attempt === 2) {
+            opponent2TimerRef.current = getOpponentTimer(row, col, attempt, responseTime, incorrectContestants);
+        }   
     }
 
     function opponentAnswer(row, col) {
@@ -147,24 +176,52 @@ const Board = forwardRef((props, ref) => {
         // if both opponents answered, start another timer for the second contestant
         if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest)) {
             handleOpponentAnswer(row, col, incorrectContestants, 2);
-        }
+        } 
     }
 
-    function playerAnswer(row, col) {
-        console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
-        stats.numClicks += 1;
-        stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
-        if (buzzerTimeoutRef.current !== undefined) {
+    function startBuzzerTimeout(row, col, isPlayerAnswer = false) {
+        let timeout = new Audio(Timeout);
+        buzzerTimeoutRef.current = setTimeout(() => {
+            timeout.play();    
+            if (isPlayerAnswer) {
+                deductScore(row, col);
+            } else if (isTripleStumper(row, col)) {
+                concede(row, col);
+            }   
+        }, 5000);
+    }
+
+    function clearBuzzerTimeout() {
+        if (buzzerTimeoutRef.current) {
             clearTimeout(buzzerTimeoutRef.current);
             buzzerTimeoutRef.current = null;
         }
+    }
+
+    function clearOpponentTimer() {
+        if (opponent1TimerRef.current) {
+            clearTimeout(opponent1TimerRef.current);
+            opponent1TimerRef.current = null;
+        }    
+        if (opponent2TimerRef.current) {
+            clearTimeout(opponent2TimerRef.current);
+            opponent2TimerRef.current = null;
+        }    
+    }
+
+    function playerAnswer(row, col) {
+        clearOpponentTimer();
+        clearBuzzerTimeout();
+        startBuzzerTimeout(row, col, true);
+        console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
+        stats.numClicks += 1;
+        stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
         gameInfoContext.dispatch({ type: 'disable_player_answer' });
         setResponseTimerIsActive(false);
         readText(playerName);
         response.countdown = true;
         setBoardState(row, col, 'eye');
         clearInterval(response.interval);
-        clearTimeout(opponentTimerRef.current);
     }
 
     function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
@@ -183,14 +240,13 @@ const Board = forwardRef((props, ref) => {
         }
         if (clue.daily_double_wager > 0 || player.conceded) {
             setMessageLines(incorrectMessage, clue.response.correct_response);
-        } else {
-            setMessageLines(incorrectMessage);
         }
         setScores(scores);
 
     }
 
     function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
+        clearBuzzerTimeout();
         if (correctContestant && scores[correctContestant]) {
             gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
             scores[correctContestant].score += scoreChange;
@@ -238,15 +294,8 @@ const Board = forwardRef((props, ref) => {
         if (isPlayerDailyDouble(row, col)) {
             return;
         }
-        const nextClueNumber = getNextClueNumber();
-        let message;
-        let nextClue;
-        if (nextClueNumber > 0) {
-            nextClue = getClue(nextClueNumber);
-        }
-        if (nextClue) {
-            message = gameInfoContext.state.lastCorrect + ': ' + nextClue.category + ' for $' + nextClue.value;
-        }
+       
+        let nextClueInfo = getNextClueInfo();
         const incorrectContestants = clue.response.incorrect_contestants
             .filter(contestant => contestant !== gameInfoContext.state.weakest)
             .filter(contestant => !answered.includes(contestant));
@@ -259,26 +308,23 @@ const Board = forwardRef((props, ref) => {
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
             if (player.conceded && gameInfoContext.state.lastCorrect !== playerName) {
-                setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
+                setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueInfo.nextClueNumber, nextClueInfo.nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
             if (incorrectContestants.length > 0) {
                 handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            } else {
-                setMessageLines(clue.response.correct_response);
             }
             // go to next clue selected by opponent
-            if (nextClueNumber > 0 && opponentControlsBoard()) {
-                setTimeout(() => setMessageLines(message), 2500);
+            if (nextClueInfo.nextClueNumber > 0 && opponentControlsBoard()) {
+                setTimeout(() => setMessageLines(nextClueInfo.message), 2500);
                 setTimeout(() => displayNextClue(), 4500);
             }
         } else { // no incorrect responses
-            handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
+            handleCorrectResponse(correctContestant, scoreChange, clue, nextClueInfo.nextClueNumber, nextClueInfo.nextClue, row, col);
         }
     }
 
     function opponentControlsBoard() {
-        console.log('lastCorrect: ' + gameInfoContext.state.lastCorrect);
         return gameInfoContext.state.lastCorrect !== player.name;
     }
 
@@ -307,11 +353,6 @@ const Board = forwardRef((props, ref) => {
     function getNextClueNumber() {
         for (let i = 1; i <= 30; i++) {
             if (availableClueNumbers[i - 1] === true) {
-                const clue = getClue(i);
-                // if this is a daily double that was not answered by the contestant in the televised game, skip this clue
-                if (clue && clue.daily_double_wager > 0 && !isContestantsDailyDouble(clue, gameInfoContext.state.lastCorrect)) {
-                    continue;
-                }
                 return i;
             }
         }
@@ -354,16 +395,10 @@ const Board = forwardRef((props, ref) => {
                 concede(row, col);
             } else if (board[col][row].visible === 'clue') {
                 setBoardState(row, col, 'buzzer');
-                if (isTripleStumper(row, col)) {
-                    let timeout = new Audio(Timeout);
-                    buzzerTimeoutRef.current = setTimeout(() => {
-                        timeout.play();
-                        concede(row, col);
-                    }, 5000);
-                } else {
-                    opponentAnswer(row, col);
+                startBuzzerTimeout(row, col);
+                if (!hasNoAttempts(row, col)) {
+                    opponentAnswer(row, col);            
                 }
-                
             }
             setResponseTimerIsActive(true);
             msg.removeEventListener('end', clearClue, true);
@@ -382,6 +417,11 @@ const Board = forwardRef((props, ref) => {
 
     function isTripleStumper(row, col) {
         return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
+    }
+
+    function hasNoAttempts(row, col) {
+        return isTripleStumper(row, col) && (board[col][row].response.incorrect_contestants.length === 0 || 
+            (board[col][row].response.incorrect_contestants.length === 1 && board[col][row].response.incorrect_contestants[0] === gameInfoContext.state.weakest));
     }
 
     function getOpponentResponseTime(value, round) {
@@ -457,7 +497,7 @@ const Board = forwardRef((props, ref) => {
             stats.coryatScore -= board[col][row].value;
         }
         setScores(scores);
-        updateOpponentScores(row, col);
+        opponentAnswer(row, col); 
         resetClue(row, col);
         setDisableClue(false);
     }
@@ -469,6 +509,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function showAnswer(row, col) {
+        clearBuzzerTimeout();
         setResponseTimerIsActive(false);
         response.countdown = false;
         setBoardState(row, col, 'judge');
