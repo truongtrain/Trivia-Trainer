@@ -2,7 +2,6 @@ import { BiShow } from 'react-icons/bi';
 import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
-import { BsFillFlagFill } from 'react-icons/bs';
 import FinalMusic from '../resources/final_jeopardy.mp3';
 import Timeout from '../resources/timeout.mp3';
 import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
@@ -20,7 +19,8 @@ const Board = forwardRef((props, ref) => {
         player, showData, setScores, enterFullScreen,
         msg, response, setResponseTimerIsActive } = props;
     const buzzerTimeoutRef = useRef(null);
-    const opponentTimerRef = useRef(null);
+    const opponent1TimerRef = useRef(null);
+    const opponent2TimerRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
         displayClueByNumber
@@ -122,23 +122,30 @@ const Board = forwardRef((props, ref) => {
         }, 500);
     }
 
+    function getOpponentTimer(row, col, attempt, responseTime, incorrectContestants) {
+        return setTimeout(() => {
+            if (board[col][row].visible === 'closed') {
+                setMessageLines(board[col][row].response.correct_response);    
+            } else if (incorrectContestants.length > attempt - 1) {
+                readText(incorrectContestants[attempt - 1]);
+            } else if (board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {              
+                readText(board[col][row].response.correct_contestant);             
+            }
+            updateOpponentScores(row, col);
+        }, responseTime);
+    }
+
     function handleOpponentAnswer(row, col, incorrectContestants, attempt) {
-        console.log('attempt: ' + attempt)
         let responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
         if (attempt === 2) {
             responseTime += 1200;
         }
         console.log('opponent response time (ms): ' + responseTime);
-        opponentTimerRef.current = setTimeout(() => {
-            if (board[col][row].visible === 'closed') {
-                setMessageLines(board[col][row].response.correct_response);
-            } else if ((attempt === 2  || incorrectContestants.length === 0) && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
-                readText(board[col][row].response.correct_contestant);
-            } else if (incorrectContestants.length > 0) {
-                readText(incorrectContestants[0]);
-            }
-            updateOpponentScores(row, col);
-        }, responseTime);
+        if (attempt === 1) {
+            opponent1TimerRef.current = getOpponentTimer(row, col, attempt, responseTime, incorrectContestants);
+        } else if (attempt === 2) {
+            opponent2TimerRef.current = getOpponentTimer(row, col, attempt, responseTime, incorrectContestants);
+        }   
     }
 
     function opponentAnswer(row, col) {
@@ -147,9 +154,8 @@ const Board = forwardRef((props, ref) => {
             .filter(contestant => !answered.includes(contestant));
         handleOpponentAnswer(row, col, incorrectContestants, 1);
         // if both opponents answered, start another timer for the second contestant
-        // TODO: Fix this
         if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest)) {
-            //handleOpponentAnswer(row, col, incorrectContestants, 2);
+            handleOpponentAnswer(row, col, incorrectContestants, 2);
         } 
     }
 
@@ -161,9 +167,13 @@ const Board = forwardRef((props, ref) => {
     }
 
     function clearOpponentTimer() {
-        if (opponentTimerRef.current) {
-            clearTimeout(opponentTimerRef.current);
-            opponentTimerRef.current = null;
+        if (opponent1TimerRef.current) {
+            clearTimeout(opponent1TimerRef.current);
+            opponent1TimerRef.current = null;
+        }    
+        if (opponent2TimerRef.current) {
+            clearTimeout(opponent2TimerRef.current);
+            opponent2TimerRef.current = null;
         }    
     }
 
@@ -372,7 +382,6 @@ const Board = forwardRef((props, ref) => {
                     timeout.play();
                     concede(row, col);
                 }, 5000);
-                console.log(opponentTimerRef);
                 if (!hasNoAttempts(row, col)) {
                     opponentAnswer(row, col);            
                 }
