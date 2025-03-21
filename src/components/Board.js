@@ -483,7 +483,7 @@ const Board = forwardRef((props, ref) => {
             stats.coryatScore -= board[col][row].value;
         }
         setScores(scores);
-        updateOpponentScores(row, col);
+        opponentAnswer(row, col); 
         resetClue(row, col);
         setDisableClue(false);
     }
