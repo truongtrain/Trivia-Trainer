@@ -189,12 +189,10 @@ const Board = forwardRef((props, ref) => {
                 concede(row, col);
             }   
         }, 5000);
-        console.log('start timer ID: ' + buzzerTimeoutRef.current);
     }
 
     function clearBuzzerTimeout() {
         if (buzzerTimeoutRef.current !== undefined) {
-            console.log('clear timer ID: ' + buzzerTimeoutRef.current);
             clearTimeout(buzzerTimeoutRef.current);
             buzzerTimeoutRef.current = null;
         }
@@ -261,7 +259,6 @@ const Board = forwardRef((props, ref) => {
                 setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
             }, 2000);
             response.seconds = 0;
-            console.log('display 246')
             setTimeout(() => displayNextClue(), 4000);
         }
     }
