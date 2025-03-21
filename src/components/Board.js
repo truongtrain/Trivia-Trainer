@@ -168,10 +168,12 @@ const Board = forwardRef((props, ref) => {
             timeout.play();
             concede(row, col);
         }, 5000);
+        console.log('start timer ID: ' + buzzerTimeoutRef.current);
     }
 
     function clearBuzzerTimeout() {
         if (buzzerTimeoutRef.current !== undefined) {
+            console.log('clear timer ID: ' + buzzerTimeoutRef.current);
             clearTimeout(buzzerTimeoutRef.current);
             buzzerTimeoutRef.current = null;
         }
@@ -466,7 +468,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function incrementScore(row, col) {
-        clearBuzzerTimeout();
         setDisableClue(false);
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         msg.text = 'Correct';
@@ -504,6 +505,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function showAnswer(row, col) {
+        clearBuzzerTimeout();
         setResponseTimerIsActive(false);
         response.countdown = false;
         setBoardState(row, col, 'judge');
