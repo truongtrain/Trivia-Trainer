@@ -174,7 +174,8 @@ const Board = forwardRef((props, ref) => {
             .filter(contestant => !answered.includes(contestant));
         handleOpponentAnswer(row, col, incorrectContestants, 1);
         // if both opponents answered, start another timer for the second contestant
-        if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest)) {
+        if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant && (board[col][row].response.correct_contestant !== gameInfoContext.state.weakest))) {
+            clearOpponent1Timer();
             handleOpponentAnswer(row, col, incorrectContestants, 2);
         } 
     }
@@ -198,15 +199,23 @@ const Board = forwardRef((props, ref) => {
         }
     }
 
-    function clearOpponentTimer() {
+    function clearOpponent1Timer() {
         if (opponent1TimerRef.current) {
             clearTimeout(opponent1TimerRef.current);
             opponent1TimerRef.current = null;
         }    
+    }
+
+    function clearOpponent2Timer() {
         if (opponent2TimerRef.current) {
             clearTimeout(opponent2TimerRef.current);
             opponent2TimerRef.current = null;
         }    
+    }
+
+    function clearOpponentTimer() {
+        clearOpponent1Timer();
+        clearOpponent2Timer();
     }
 
     function playerAnswer(row, col) {
@@ -304,10 +313,9 @@ const Board = forwardRef((props, ref) => {
             correctContestant = '';
         }
         let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
-        // handle triple stumpers
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            if (player.conceded && gameInfoContext.state.lastCorrect !== playerName) {
+            if (gameInfoContext.state.lastCorrect !== playerName && correctContestant) {
                 setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueInfo.nextClueNumber, nextClueInfo.nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
