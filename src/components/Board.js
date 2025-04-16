@@ -110,7 +110,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function concede(row, col) {
-        console.log('concede')
         clearBuzzerTimeout();
         setMessageLines(board[col][row].response.correct_response);
         if (opponentControlsBoard()) {
@@ -125,7 +124,6 @@ const Board = forwardRef((props, ref) => {
         if (isContestantsDailyDouble(board[col][row], gameInfoContext.state.lastCorrect)) {
             updateOpponentScores(row, col);
         } else if (opponentControlsBoard()) {
-            console.log(127)
             setTimeout(() => displayNextClue(), 4000);
         }
         if (gameInfoContext.state.lastCorrect === player.name) {
@@ -144,7 +142,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function getOpponentTimer(row, col, attempt, responseTime, incorrectContestants) {
-        console.log('getOpponentTimer')
         return setTimeout(() => {
             if (board[col][row].visible === 'closed') {
                 setMessageLines(board[col][row].response.correct_response);    
@@ -159,7 +156,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function handleOpponentAnswer(row, col, incorrectContestants, attempt) {
-        console.log('attempt: ' + attempt)
         let responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
         if (attempt === 2) {
             responseTime += 1200;
@@ -178,10 +174,8 @@ const Board = forwardRef((props, ref) => {
             .filter(contestant => !answered.includes(contestant));
         handleOpponentAnswer(row, col, incorrectContestants, 1);
         // if both opponents answered, start another timer for the second contestant
-        console.log(incorrectContestants);
-        console.log('correct_contestant: ' + board[col][row].response.correct_contestant);
-        console.log('weakest: ' + gameInfoContext.state.weakest);
         if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant && (board[col][row].response.correct_contestant !== gameInfoContext.state.weakest))) {
+            clearOpponent1Timer();
             handleOpponentAnswer(row, col, incorrectContestants, 2);
         } 
     }
@@ -205,15 +199,23 @@ const Board = forwardRef((props, ref) => {
         }
     }
 
-    function clearOpponentTimer() {
+    function clearOpponent1Timer() {
         if (opponent1TimerRef.current) {
             clearTimeout(opponent1TimerRef.current);
             opponent1TimerRef.current = null;
         }    
+    }
+
+    function clearOpponent2Timer() {
         if (opponent2TimerRef.current) {
             clearTimeout(opponent2TimerRef.current);
             opponent2TimerRef.current = null;
         }    
+    }
+
+    function clearOpponentTimer() {
+        clearOpponent1Timer();
+        clearOpponent2Timer();
     }
 
     function playerAnswer(row, col) {
@@ -266,7 +268,6 @@ const Board = forwardRef((props, ref) => {
                 setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
             }, 2000);
             response.seconds = 0;
-            console.log(263)
             setTimeout(() => displayNextClue(), 4000);
         }
     }
@@ -315,7 +316,6 @@ const Board = forwardRef((props, ref) => {
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
             if (gameInfoContext.state.lastCorrect !== playerName && correctContestant) {
-                console.log('correct: ' + correctContestant)
                 setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueInfo.nextClueNumber, nextClueInfo.nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
@@ -325,7 +325,6 @@ const Board = forwardRef((props, ref) => {
             // go to next clue selected by opponent
             if (nextClueInfo.nextClueNumber > 0 && opponentControlsBoard()) {
                 setTimeout(() => setMessageLines(nextClueInfo.message), 2500);
-                console.log(323)
                 setTimeout(() => displayNextClue(), 4500);
             }
         } else { // no incorrect responses
