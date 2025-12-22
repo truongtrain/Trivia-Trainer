@@ -378,7 +378,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function replaceUnderscoreWithBlank(msg) {
-        return msg.replace('____', 'blank')
+        return msg.replaceAll('____', 'blank')
     }
 
     function readClue(row, col) {
@@ -391,8 +391,8 @@ const Board = forwardRef((props, ref) => {
             clue = showData.double_jeopardy_round[col][row];
         }
         displayClueImage(row, col);
-        msg.text = clue.text;
-        window.speechSynthesis.speak(replaceUnderscoreWithBlank(msg));
+        msg.text = replaceUnderscoreWithBlank(clue.text);
+        window.speechSynthesis.speak(msg);
         msg.addEventListener('end', function clearClue() {
             gameInfoContext.dispatch({ type: 'update_image', imageUrl: '' });
             response.seconds = 0;
