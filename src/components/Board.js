@@ -377,6 +377,10 @@ const Board = forwardRef((props, ref) => {
         return null;
     }
 
+    function replaceUnderscoreWithBlank(msg) {
+        return msg.replace('____', 'blank')
+    }
+
     function readClue(row, col) {
         setDisableClue(true);
         stats.numClues += 1;
@@ -388,7 +392,7 @@ const Board = forwardRef((props, ref) => {
         }
         displayClueImage(row, col);
         msg.text = clue.text;
-        window.speechSynthesis.speak(msg);
+        window.speechSynthesis.speak(replaceUnderscoreWithBlank(msg));
         msg.addEventListener('end', function clearClue() {
             gameInfoContext.dispatch({ type: 'update_image', imageUrl: '' });
             response.seconds = 0;
