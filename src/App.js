@@ -60,7 +60,7 @@ const App = () => {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/9157')
+    fetch('http://localhost:5000/game/9162')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -105,9 +105,7 @@ const App = () => {
 
   function loadContestants(playerNameParam) {
     dispatchGameInfo({ type: 'set_weakest_contestant', weakest: showData.weakest_contestant});
-    let filteredContestants = showData.contestants.filter(
-      contestant => contestant !== showData.weakest_contestant
-    );
+    let filteredContestants = showData.contestants;
     filteredContestants.push(playerNameParam);
     let tempContestants = {};
     filteredContestants.forEach(

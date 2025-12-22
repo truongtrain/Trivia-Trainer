@@ -148,7 +148,7 @@ const Board = forwardRef((props, ref) => {
             } else if (incorrectContestants.length > attempt - 1) {
                 readText(incorrectContestants[attempt - 1]);
                 setMessageLines(board[col][row].response.incorrect_responses[attempt - 1]);
-            } else if (board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {              
+            } else {              
                 readText(board[col][row].response.correct_contestant);             
             }
             updateOpponentScores(row, col);
@@ -170,11 +170,10 @@ const Board = forwardRef((props, ref) => {
 
     function opponentAnswer(row, col) {
         let incorrectContestants = board[col][row].response.incorrect_contestants
-            .filter(contestant => contestant !== gameInfoContext.state.weakest)
             .filter(contestant => !answered.includes(contestant));
         handleOpponentAnswer(row, col, incorrectContestants, 1);
         // if both opponents answered, start another timer for the second contestant
-        if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant && (board[col][row].response.correct_contestant !== gameInfoContext.state.weakest))) {
+        if (incorrectContestants.length > 1 || (incorrectContestants.length > 0 && board[col][row].response.correct_contestant)) {
             clearOpponent1Timer();
             handleOpponentAnswer(row, col, incorrectContestants, 2);
         } 
@@ -238,7 +237,7 @@ const Board = forwardRef((props, ref) => {
         clue.response.incorrect_responses = clue.response.incorrect_responses.filter(response =>
             !response.includes(gameInfoContext.state.weakest + ':'));
         for (let i = 0; i < incorrectContestants.length; i++) {
-            if (incorrectContestants[i] !== gameInfoContext.state.weakest && !answered.includes(incorrectContestants[i])) {
+            if (!answered.includes(incorrectContestants[i])) {
                 incorrectMessage += clue.response.incorrect_responses[i];
                 scores[incorrectContestants[i]].score -= scoreChange;
                 answered.push(incorrectContestants[i]);
@@ -306,12 +305,8 @@ const Board = forwardRef((props, ref) => {
        
         let nextClueInfo = getNextClueInfo();
         const incorrectContestants = clue.response.incorrect_contestants
-            .filter(contestant => contestant !== gameInfoContext.state.weakest)
             .filter(contestant => !answered.includes(contestant));
         let correctContestant = clue.response.correct_contestant;
-        if (correctContestant === gameInfoContext.state.weakest) {
-            correctContestant = '';
-        }
         let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
@@ -424,12 +419,12 @@ const Board = forwardRef((props, ref) => {
     }
 
     function isTripleStumper(row, col) {
-        return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
+        return !board[col][row].response.correct_contestant;
     }
 
     function hasNoAttempts(row, col) {
         return isTripleStumper(row, col) && (board[col][row].response.incorrect_contestants.length === 0 || 
-            (board[col][row].response.incorrect_contestants.length === 1 && board[col][row].response.incorrect_contestants[0] === gameInfoContext.state.weakest));
+            (board[col][row].response.incorrect_contestants.length === 1));
     }
 
     function getOpponentResponseTime(value, round) {
