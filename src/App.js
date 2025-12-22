@@ -64,6 +64,7 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => {
         showData = data;
+        console.log(showData.jeopardy_round)
         setBoard(showData.jeopardy_round);
       },
       () => {

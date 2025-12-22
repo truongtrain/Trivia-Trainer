@@ -377,8 +377,11 @@ const Board = forwardRef((props, ref) => {
         return null;
     }
 
-    function replaceUnderscoreWithBlank(msg) {
-        return msg.replaceAll('____', 'blank')
+    function normalizeSpokenText(msg) {
+        return msg.replace(/____/g, "blank") // underscores
+                    .replace(/THE/g, "the") // the
+                    .replace(/"/g, "") // quotes
+                    .replace(/&/g, "and"); // ampersands
     }
 
     function readClue(row, col) {
@@ -391,7 +394,7 @@ const Board = forwardRef((props, ref) => {
             clue = showData.double_jeopardy_round[col][row];
         }
         displayClueImage(row, col);
-        msg.text = replaceUnderscoreWithBlank(clue.text);
+        msg.text = normalizeSpokenText(clue.text);
         window.speechSynthesis.speak(msg);
         msg.addEventListener('end', function clearClue() {
             gameInfoContext.dispatch({ type: 'update_image', imageUrl: '' });
