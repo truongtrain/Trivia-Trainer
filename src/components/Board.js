@@ -20,6 +20,7 @@ const Board = forwardRef((props, ref) => {
         msg, response, setResponseTimerIsActive } = props;
     const buzzerTimeoutRef = useRef(null);
     const opponentTimerRef = useRef(null);
+    const opponentIndexRef = useRef(0);
 
     useImperativeHandle(ref, () => ({
         displayClueByNumber
@@ -118,9 +119,8 @@ const Board = forwardRef((props, ref) => {
         }, 500);
     }
 
-    function getOpponentTimer(row, col, responseTime, response) {
-        return setTimeout(() => {
-            const clue = board[col][row];
+    function applyOpponentResponse(row, col, response) {
+        const clue = board[col][row];
             const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
             if (board[col][row].visible === 'closed') {
                 setMessageLines(board[col][row].response.correct_response);    
@@ -152,7 +152,27 @@ const Board = forwardRef((props, ref) => {
             }
             //setScores(scores);
             clearBuzzerTimeout();
-        }, responseTime);
+    }
+
+    function startOpponentResponseSequence(row, col, responses, responseTime) {
+        if (opponentTimerRef.current) {
+            clearTimeout(opponentTimerRef.current);
+            opponentTimerRef.current = null;
+        }
+        if (!responses?.length) return;
+
+        opponentIndexRef.current = 0;
+        const runStep = () => {
+            if (board[col][row].visible === 'closed') return;
+
+            const i = opponentIndexRef.current;
+            applyOpponentResponse(row, col, responses[i]);
+            opponentIndexRef.current += 1;
+            if (opponentIndexRef.current >= responses.length) return;
+
+            opponentTimerRef.current = setTimeout(runStep, 2000 + responseTime);
+        };
+        opponentTimerRef.current = setTimeout(runStep, responseTime);
     }
 
     function opponentAnswer(row, col) {
@@ -174,12 +194,14 @@ const Board = forwardRef((props, ref) => {
         }
         let responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
         console.log('opponent response time (ms): ' + responseTime);
-        for (let i = 0; i < responses.length; i++) {
-            if (board[col][row].visible === 'closed') {
-                return;
-            }
-            opponentTimerRef.current = getOpponentTimer(row, col, responseTime, responses[i]);
-        }        
+        //for (let i = 0; i < responses.length; i++) {
+            //if (board[col][row].visible === 'closed') {
+                //return;
+           // }
+            //opponentTimerRef.current = getOpponentTimer(row, col, responseTime, responses[i]);   
+        //}        
+
+        startOpponentResponseSequence(row, col, responses, responseTime);
     }
 
     function opponentSelectsClue() {
@@ -217,7 +239,7 @@ const Board = forwardRef((props, ref) => {
 
     function clearOpponentTimer() {
         if (opponentTimerRef.current) {
-            clearTimeout(opponentTimerRef.current);
+            clearInterval(opponentTimerRef.current);
             opponentTimerRef.current = null;
         }    
     }
