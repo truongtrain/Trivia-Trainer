@@ -188,6 +188,7 @@ const Board = forwardRef((props, ref) => {
                 showAnswer(row, col);
                 setTimeout(() => displayNextClue(), 2000);
             }   
+            setBoardState(row, col, 'closed');
         }, 5000);
     }
 
