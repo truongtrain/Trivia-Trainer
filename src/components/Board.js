@@ -121,23 +121,36 @@ const Board = forwardRef((props, ref) => {
     function getOpponentTimer(row, col, responseTime, response) {
         return setTimeout(() => {
             const clue = board[col][row];
-            let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
+            const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
             if (board[col][row].visible === 'closed') {
                 setMessageLines(board[col][row].response.correct_response);    
             } else if (!response.correct) { // handle incorrect response
                 readText(response.contestant + ' No');
                 setMessageLines(response.response);
-                scores[response.contestant].score -= scoreChange;
+                setScores(prev => {
+                    const next = structuredClone(prev);
+                    next[response.contestant].score -= scoreChange;
+                    return next;
+                });
+                //scores[response.contestant].score -= scoreChange;
                 response.seconds = 0;
             } else { // handle correct response
                 readText(response.contestant);
                 setMessageLines(response.contestant + ': What is ' + response.response + '?');
-                scores[response.contestant].score += scoreChange;
-                gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: response.contestant });
+                setScores(prev => {
+                    const next = structuredClone(prev);
+                    next[response.contestant].score += scoreChange;
+                    return next;
+                });
+                //scores[response.contestant].score += scoreChange;
+                gameInfoContext.dispatch({
+                    type: 'set_last_correct_contestant',
+                    lastCorrect: response.contestant
+                });
                 setBoardState(row, col, 'closed');
                 opponentSelectsClue(); 
             }
-            setScores(scores);
+            //setScores(scores);
             clearBuzzerTimeout();
         }, responseTime);
     }
