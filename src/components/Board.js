@@ -171,7 +171,7 @@ const Board = forwardRef((props, ref) => {
         let nextClueInfo = getNextClueInfo();
         if (nextClueInfo.nextClueNumber > 0 && nextClueInfo.nextClue && opponentControlsBoard()) {
             setTimeout(() => {
-                setMessageLines(response.contestant + ': ' + nextClueInfo.nextClue.category + ' for $' + nextClueInfo.nextClue.value);
+                setMessageLines(gameInfoContext.state.lastCorrect + ': ' + nextClueInfo.nextClue.category + ' for $' + nextClueInfo.nextClue.value);
             }, 2000);
             response.seconds = 0;
             setTimeout(() => displayNextClue(), 4000);
@@ -298,7 +298,8 @@ const Board = forwardRef((props, ref) => {
         return msg.replace(/____/g, "blank") // underscores
                     .replace(/THE/g, "the") // the
                     .replace(/"/g, "") // quotes
-                    .replace(/&/g, "and"); // ampersands
+                    .replace(/&/g, "and") // ampersands
+                    .toLowerCase();
     }
 
     function readClue(row, col) {
