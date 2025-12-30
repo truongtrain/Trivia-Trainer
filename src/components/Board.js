@@ -135,6 +135,7 @@ const Board = forwardRef((props, ref) => {
                 scores[response.contestant].score += scoreChange;
                 gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: response.contestant });
                 setBoardState(row, col, 'closed');
+                opponentSelectsClue(); 
             }
             setScores(scores);
             clearBuzzerTimeout();
@@ -165,8 +166,10 @@ const Board = forwardRef((props, ref) => {
                 return;
             }
             opponent1TimerRef.current = getOpponentTimer(row, col, responseTime, response);
-        }
+        }        
+    }
 
+    function opponentSelectsClue() {
         // go to next clue selected by opponent
         let nextClueInfo = getNextClueInfo();
         if (nextClueInfo.nextClueNumber > 0 && nextClueInfo.nextClue && opponentControlsBoard()) {
@@ -321,7 +324,6 @@ const Board = forwardRef((props, ref) => {
             if (isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
                 setBoardState(row, col, 'eye');
             } else if (board[col][row].daily_double_wager > 0) {
-                // concede(row, col);
                 opponentAnswer(row, col); 
             } else if (board[col][row].visible === 'clue') {
                 setBoardState(row, col, 'buzzer');
