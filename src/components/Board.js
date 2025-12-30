@@ -19,7 +19,7 @@ const Board = forwardRef((props, ref) => {
         player, showData, setScores, enterFullScreen,
         msg, response, setResponseTimerIsActive } = props;
     const buzzerTimeoutRef = useRef(null);
-    const opponentTimerRefs = useRef([]);
+    const opponentTimerRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
         displayClueByNumber
@@ -165,7 +165,7 @@ const Board = forwardRef((props, ref) => {
             if (board[col][row].visible === 'closed') {
                 return;
             }
-            opponentTimerRefs.current[i] = getOpponentTimer(row, col, responseTime, responses[i]);
+            opponentTimerRef.current = getOpponentTimer(row, col, responseTime, responses[i]);
         }        
     }
 
@@ -202,21 +202,15 @@ const Board = forwardRef((props, ref) => {
         }
     }
 
-    function clearOpponentTimers() {
-        for (let i = 0; i < opponentTimerRefs.current.length; i++) {
-            clearOpponentTimer(i);
-        }
-    }
-
-    function clearOpponentTimer(index) {
-        if (opponentTimerRefs.current[index]) {
-            clearTimeout(opponentTimerRefs.current[index]);
-            opponentTimerRefs.current[index] = null;
+    function clearOpponentTimer() {
+        if (opponentTimerRef.current) {
+            clearTimeout(opponentTimerRef.current);
+            opponentTimerRef.current = null;
         }    
     }
 
     function playerAnswer(row, col) {
-        clearOpponentTimers();
+        clearOpponentTimer();
         clearBuzzerTimeout();
         startBuzzerTimeout(row, col, true);
         console.log('player response time (ms): ' + Math.floor(response.seconds * 1000));
