@@ -1,1026 +1,502 @@
-{
-    "contestants": [
-        "Deborah",
-        "Jon",
-        "Kathleen"
+[
+    [
+        {
+            "category": "NAMELESS IN SHAKESPEARE",
+            "category_note": "",
+            "clue_id": "535723",
+            "daily_double_wager": 0,
+            "number": 30,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "the Fool",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "THIS IRREVERENT CHARACTER TELLS KING LEAR \"THOU HADST LITTLE WIT IN THY BALD CROWN WHEN THOU GAV'ST THY GOLDEN ONE AWAY\"",
+            "url": "",
+            "value": 200
+        },
+        {
+            "category": "NAMELESS IN SHAKESPEARE",
+            "category_note": "",
+            "clue_id": "535718",
+            "daily_double_wager": 0,
+            "number": 23,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "the nurse",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "A COMPANION FOR JULIET'S WHOLE LIFE, SHE'S KNOWN BY HER OCCUPATION, BUT GETS TO TELL US HER DEAD DAUGHTER WAS NAMED SUSAN",
+            "url": "",
+            "value": 400
+        },
+        {
+            "category": "NAMELESS IN SHAKESPEARE",
+            "category_note": "",
+            "clue_id": "535719",
+            "daily_double_wager": 0,
+            "number": 22,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "The Tempest",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "THE BOATSWAIN APPEARS IN THE FIRST SCENE OF THIS PLAY & AGAIN, SURPRISED NOT TO BE DROWNED, IN THE LAST",
+            "url": "",
+            "value": 600
+        },
+        {
+            "category": "NAMELESS IN SHAKESPEARE",
+            "category_note": "",
+            "clue_id": "535698",
+            "daily_double_wager": 0,
+            "number": 1,
+            "response": {
+                "correct_contestant": "",
+                "correct_response": "a herald",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "IN \"HENRY V\" THE GUY WITH THIS JOB OF ANNOUNCING & PROCLAIMING HAS A NAME, MONTJOY; IN \"OTHELLO\" HE'S NAMELESS",
+            "url": "",
+            "value": 800
+        },
+        {
+            "category": "NAMELESS IN SHAKESPEARE",
+            "category_note": "",
+            "clue_id": "535699",
+            "daily_double_wager": 1000,
+            "number": 2,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "beware the Ides of March",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "ALL 5 WORDS OF IT, IT'S THE MOST FAMOUS LINE SPOKEN BY THE SOOTHSAYER IN \"JULIUS CAESAR\"",
+            "url": "",
+            "value": 1000
+        }
     ],
-    "double_jeopardy_round": [
-        [
-            {
-                "category": "THE GERALD R. FORD MUSEUM",
-                "category_note": "",
-                "clue_id": "126524",
-                "daily_double_wager": 0,
-                "number": 18,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "the pardon of Richard Nixon",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": " THIS IS THE ACTUAL PEN USED BY PRESIDENT FORD ON SEPT. 8, 1974 TO AFFIX HIS SIGNATURE TO THIS DOCUMENT, SAYING THAT \"IT IS THE RIGHT THING TO DO\"",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_DJ_18.jpg",
-                "value": 400
+    [
+        {
+            "category": "GANG \"WAY\"",
+            "category_note": "",
+            "clue_id": "535700",
+            "daily_double_wager": 0,
+            "number": 6,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "a stowaway",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "category": "THE GERALD R. FORD MUSEUM",
-                "category_note": "",
-                "clue_id": "126525",
-                "daily_double_wager": 0,
-                "number": 19,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "Michigan",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": " I'M HOLDING GERALD FORD'S FOOTBALL HELMET; HE WAS A 2-WAY PLAYER AT LINEBACKER & CENTER, & THIS TEAM'S MVP OF 1934",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_DJ_19.jpg",
-                "value": 800
+            "text": "DUTCH PAINTER WILLEM DE KOONING CAME TO AMERICA ABOARD A STEAMSHIP IN 1926 AS ONE OF THESE GRATIS WAYFARERS",
+            "url": "",
+            "value": 200
+        },
+        {
+            "category": "GANG \"WAY\"",
+            "category_note": "",
+            "clue_id": "535701",
+            "daily_double_wager": 0,
+            "number": 8,
+            "response": {
+                "correct_contestant": "Taylor",
+                "correct_response": "an airway",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "category": "THE GERALD R. FORD MUSEUM",
-                "category_note": "",
-                "clue_id": "126526",
-                "daily_double_wager": 0,
-                "number": 20,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "Hirohito",
-                    "incorrect_contestants": [
-                        "Deborah"
-                    ],
-                    "incorrect_responses": [
-                        "(Deborah: What is Japan?)"
-                    ]
-                },
-                "text": " THIS BEAUTIFUL KUTANI PLATE WAS PRESENTED TO PRESIDENT FORD IN 1975 BY THIS EMPEROR, THE FIRST FROM HIS COUNTRY EVER TO VISIT THE UNITED STATES",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_DJ_20.jpg",
-                "value": 1200
+            "text": "AN IMPORTANT ELEMENT OF GIVING CPR IS TO \"ESTABLISH\" THIS IN THE AFFLICTED PERSON",
+            "url": "",
+            "value": 400
+        },
+        {
+            "category": "GANG \"WAY\"",
+            "category_note": "",
+            "clue_id": "535702",
+            "daily_double_wager": 0,
+            "number": 9,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "sleepaway (camp)",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "category": "THE GERALD R. FORD MUSEUM",
-                "category_note": "",
-                "clue_id": "126527",
-                "daily_double_wager": 0,
-                "number": 21,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "Lynette \"Squeaky\" Fromme",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": " THIS COLT .45 PISTOL WAS USED IN AN ATTEMPTED ASSASSINATION OF PRESIDENT FORD ON SEPT. 5, 1975 IN SACRAMENTO BY THIS DISCIPLE OF CHARLES MANSON",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_DJ_21.jpg",
-                "value": 1600
+            "text": "EMMA IS 8--OK, 7 3/4--A BIT CLINGY, SO ANOTHER SUMMER AT DAY CAMP? BUT WILL THIS OPPOSITE TYPE HELP HER CONFIDENCE? PARENTING IS HARD!",
+            "url": "",
+            "value": 600
+        },
+        {
+            "category": "GANG \"WAY\"",
+            "category_note": "",
+            "clue_id": "535707",
+            "daily_double_wager": 0,
+            "number": 10,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "caraway",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "category": "THE GERALD R. FORD MUSEUM",
-                "category_note": "",
-                "clue_id": "126528",
-                "daily_double_wager": 0,
-                "number": 24,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Rabin",
-                    "incorrect_contestants": [
-                        "Jon"
-                    ],
-                    "incorrect_responses": [
-                        "(Jon: Who is Menachem Begin?)",
-                        "(Yitzhak)"
-                    ]
-                },
-                "text": " THIS ANCIENT MENORAH WAS A GIFT FROM THIS ISRAELI PRIME MINISTER & LABOR PARTY LEADER; HIS FIRST TERM IN OFFICE COINCIDED WITH GERALD FORD'S: 1974-1977",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_DJ_24.jpg",
-                "value": 2000
-            }
-        ],
-        [
-            {
-                "category": "SONGFUL WOMEN",
-                "category_note": "",
-                "clue_id": "126529",
-                "daily_double_wager": 0,
-                "number": 22,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "Gwen Stefani",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "HER HUSBAND, FROM THE BAND BUSH, COULD TELL YOU SHE'S SUNG ABOUT RICH, ORANGE COUNTY & HARAJUKU GIRLS",
-                "url": "",
-                "value": 400
+            "text": "THIS HERB OF THE PARSLEY FAMILY IS WIDELY GROWN FOR ITS SEEDS USED IN FLAVORING & SEASONING",
+            "url": "",
+            "value": 800
+        },
+        {
+            "category": "GANG \"WAY\"",
+            "category_note": "",
+            "clue_id": "535708",
+            "daily_double_wager": 0,
+            "number": 11,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "superspeedway",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "category": "SONGFUL WOMEN",
-                "category_note": "",
-                "clue_id": "126530",
-                "daily_double_wager": 0,
-                "number": 23,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "Amy Winehouse",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": [
-                        "(Alex: And her name is [*]. I bet you if we had teens here today, they'd be able to get all of these. Jon, pick again.)",
-                        "(Jon: I'm feeling old, Alex.)"
-                    ]
-                },
-                "text": "HER MANAGEMENT WANTED HER TO GO TO \"REHAB\", SO SHE FIRED THEM & SANG ABOUT IT ON \"BACK TO BLACK\"",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "",
-                "daily_double_wager": "",
-                "number": "",
-                "response": "",
-                "text": "",
-                "value": ""
-            },
-            {
-                "category": "",
-                "daily_double_wager": "",
-                "number": "",
-                "response": "",
-                "text": "",
-                "value": ""
-            },
-            {
-                "category": "",
-                "daily_double_wager": "",
-                "number": "",
-                "response": "",
-                "text": "",
-                "value": ""
-            }
-        ],
-        [
-            {
-                "category": "TECHNO THRILLERS",
-                "category_note": "",
-                "clue_id": "126519",
-                "daily_double_wager": 0,
-                "number": 11,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Camry",
-                    "incorrect_contestants": [
-                        "Kathleen"
-                    ],
-                    "incorrect_responses": [
-                        "(Kathleen: What's a Toyota?)",
-                        "(Alex: Be more specific.)",
-                        "(Kathleen: Uh, what's a Corolla?)"
-                    ]
-                },
-                "text": "THE BESTSELLING CAR IN 9 OF THE PAST 10 YEARS IS THIS MODEL, NOW AVAILABLE IN A HYBRID VERSION",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "TECHNO THRILLERS",
-                "category_note": "",
-                "clue_id": "126531",
-                "daily_double_wager": 0,
-                "number": 17,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "THX",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "THIS 3-LETTER MOVIE THEATER SYSTEM STANDARD WAS DEVELOPED AT GEORGE LUCAS' SKYWALKER RANCH",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "",
-                "daily_double_wager": "",
-                "number": "",
-                "response": "",
-                "text": "",
-                "value": ""
-            },
-            {
-                "category": "",
-                "daily_double_wager": "",
-                "number": "",
-                "response": "",
-                "text": "",
-                "value": ""
-            },
-            {
-                "category": "TECHNO THRILLERS",
-                "category_note": "",
-                "clue_id": "126532",
-                "daily_double_wager": 0,
-                "number": 25,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "flash drives",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "IN 2001 IBM SOLD THESE TYPES OF USB DRIVES CALLED \"MEMORY KEYS\" IN 8MB SIZE; TODAY YOU CAN GET THEM IN GIGS",
-                "url": "",
-                "value": 2000
-            }
-        ],
-        [
-            {
-                "category": "THE 1950s",
-                "category_note": "",
-                "clue_id": "126510",
-                "daily_double_wager": 0,
-                "number": 1,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Howdy Doody Time!",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "ON 1950S TV, THE ANSWER THAT FOLLOWED \"SAY, KIDS, WHAT TIME IS IT?\"",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "THE 1950s",
-                "category_note": "",
-                "clue_id": "126511",
-                "daily_double_wager": 0,
-                "number": 2,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "In God we trust",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "IN 1956 THIS 4-WORD PHRASE BECAME THE NATIONAL MOTTO OF THE U.S.",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "THE 1950s",
-                "category_note": "",
-                "clue_id": "126512",
-                "daily_double_wager": 0,
-                "number": 6,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "NASA",
-                    "incorrect_contestants": [
-                        "Jon"
-                    ],
-                    "incorrect_responses": [
-                        "(Jon: What is the FAA?)"
-                    ]
-                },
-                "text": "CREATED IN 1958, THIS AGENCY SUPERSEDED THE NACA, THE NATIONAL ADVISORY COMMITTEE FOR AERONAUTICS",
-                "url": "",
-                "value": 1200
-            },
-            {
-                "category": "THE 1950s",
-                "category_note": "",
-                "clue_id": "126513",
-                "daily_double_wager": 0,
-                "number": 9,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Algeria",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "GUY MOLLET BECAME FRANCE'S PREMIER ON JAN. 31, 1956; ON FEB. 6 HE FLEW TO THIS COUNTRY TO EVALUATE THE SITUATION",
-                "url": "",
-                "value": 1600
-            },
-            {
-                "category": "THE 1950s",
-                "category_note": "",
-                "clue_id": "126520",
-                "daily_double_wager": 2500,
-                "number": 10,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "SEATO (Southeast Asia Treaty Organization)",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "THE '50S SAW THE ARRIVAL OF THE WORD \"NEATO\" & OF THIS DEFENSE ORG. THAT INCLUDED THE U.S., THAILAND & THE PHILIPPINES",
-                "url": "",
-                "value": 2000
-            }
-        ],
-        [
-            {
-                "category": "WHAT'S FOR LUNCH?",
-                "category_note": "",
-                "clue_id": "126521",
-                "daily_double_wager": 0,
-                "number": 12,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "a hamburger",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "FOOD ITEM THAT'S THE CULINARY SPECIALTY OF THE ISRAELI RESTAURANT CHAIN MCDAVID",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "WHAT'S FOR LUNCH?",
-                "category_note": "",
-                "clue_id": "126522",
-                "daily_double_wager": 0,
-                "number": 13,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "a Cobb salad",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "HOW ABOUT A SALAD, LIKE THIS ONE CREATED AT LEGENDARY HOLLYWOOD RESTAURANT THE BROWN DERBY",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "WHAT'S FOR LUNCH?",
-                "category_note": "",
-                "clue_id": "126523",
-                "daily_double_wager": 3500,
-                "number": 14,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "skate",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "SASHA COHEN WOULD KNOW THIS NAME FOR AN EDIBLE RAY; I'M HAVING IT POACHED",
-                "url": "",
-                "value": 1200
-            },
-            {
-                "category": "WHAT'S FOR LUNCH?",
-                "category_note": "",
-                "clue_id": "126533",
-                "daily_double_wager": 0,
-                "number": 15,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "soba",
-                    "incorrect_contestants": [
-                        "Deborah"
-                    ],
-                    "incorrect_responses": [
-                        "(Deborah: What are ramen?)"
-                    ]
-                },
-                "text": "JAPANESE NOODLES, WHETHER UDON OR THESE BUCKWHEAT-FLOUR ONES, ARE OFTEN SERVED IN BROTH",
-                "url": "",
-                "value": 1600
-            },
-            {
-                "category": "WHAT'S FOR LUNCH?",
-                "category_note": "",
-                "clue_id": "126534",
-                "daily_double_wager": 0,
-                "number": 16,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "a porterhouse",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "HOPE YOU'RE HUNGRY! THIS CHOICE STEAK CUT IS HUGE & CONTAINS MEAT FROM THE TOP LOIN & THE TENDERLOIN",
-                "url": "",
-                "value": 2000
-            }
-        ],
-        [
-            {
-                "category": "\"DIC\"-TIONARY",
-                "category_note": "",
-                "clue_id": "126514",
-                "daily_double_wager": 0,
-                "number": 3,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "a dickey",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "A DETACHABLE SHIRT FRONT, AS WORN BY COUSIN EDDIE IN \"NATIONAL LAMPOON'S CHRISTMAS VACATION\"",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "\"DIC\"-TIONARY",
-                "category_note": "",
-                "clue_id": "126515",
-                "daily_double_wager": 0,
-                "number": 4,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "dictation",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "THE ACT OF UTTERING WORDS TO BE TRANSCRIBED BY ANOTHER",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "\"DIC\"-TIONARY",
-                "category_note": "",
-                "clue_id": "126516",
-                "daily_double_wager": 0,
-                "number": 5,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Dickinson",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "\"LET US GO IN, THE FOG IS RISING\" WERE SAID TO BE THE LAST WORDS OF THIS POET",
-                "url": "",
-                "value": 1200
-            },
-            {
-                "category": "\"DIC\"-TIONARY",
-                "category_note": "",
-                "clue_id": "126517",
-                "daily_double_wager": 0,
-                "number": 7,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "a dictum",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "6-LETTER TERM FOR A JUDICIAL ASSERTION OR AN EDICT",
-                "url": "",
-                "value": 1600
-            },
-            {
-                "category": "\"DIC\"-TIONARY",
-                "category_note": "",
-                "clue_id": "126518",
-                "daily_double_wager": 0,
-                "number": 8,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "a dichotomy",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "A DIVISION INTO 2 USUALLY CONTRADICTORY PARTS OR OPINIONS",
-                "url": "",
-                "value": 2000
-            }
-        ]
+            "text": "NASCAR'S BIGGEST & BADDEST RACETRACK, TALLADEGA, ALABAMA'S VENUE, SURELY EARNS ITS MONIKER AS THIS TYPE OF 13-LETTER OVAL",
+            "url": "https://www.j-archive.com/media/2025-04-07_J_11.jpg",
+            "value": 1000
+        }
     ],
-    "final_jeopardy": {
-        "category": "OLYMPIC CITIES",
-        "clue": "Of all the cities to host the modern Olympic Games, this one lies closest to the equator",
-        "contestant_responses": [
-            {
-                "contestant": "Deborah",
-                "response": "What is Mexico City?",
-                "wager": 501
+    [
+        {
+            "category": "EAR, EAR",
+            "category_note": "",
+            "clue_id": "535724",
+            "daily_double_wager": 0,
+            "number": 29,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "your eardrum",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "contestant": "Jon",
-                "response": "What is Sydney",
-                "wager": 8600
+            "text": "TYMPANOPLASTY IS A SURGERY TO FIX THIS PART OF YOUR EAR IF IT BECOMES PERFORATED",
+            "url": "",
+            "value": 200
+        },
+        {
+            "category": "EAR, EAR",
+            "category_note": "",
+            "clue_id": "535720",
+            "daily_double_wager": 0,
+            "number": 24,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "a Q-tip",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "contestant": "Kathleen",
-                "response": "What is Sydney?",
-                "wager": 8001
-            }
-        ],
-        "correct_response": "Mexico City",
-        "url": null
-    },
-    "jeopardy_round": [
-        [
-            {
-                "category": "SHAKESPEAREAN ALPHABET",
-                "category_note": "",
-                "clue_id": "126495",
-                "daily_double_wager": 0,
-                "number": 16,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "a chorus",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "\"C\" IS FOR THIS DRAMATIC DEVICE OF THE GREEKS, EMPLOYED TO SPEAK THE PROLOGUE IN \"HENRY V\"",
-                "url": "",
-                "value": 200
+            "text": "THIS CENTURY-OLD COTTON SWAB BRAND SHOULD NOT BE USED TO CLEAR OUT EAR WAX--IT CAN DAMAGE YOUR EARS & PUSH THE WAX IN DEEPER",
+            "url": "",
+            "value": 400
+        },
+        {
+            "category": "EAR, EAR",
+            "category_note": "",
+            "clue_id": "535703",
+            "daily_double_wager": 0,
+            "number": 7,
+            "response": {
+                "correct_contestant": "Taylor",
+                "correct_response": "the cochlea",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "category": "SHAKESPEAREAN ALPHABET",
-                "category_note": "",
-                "clue_id": "126496",
-                "daily_double_wager": 0,
-                "number": 17,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "apothecary",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "\"A\" IS FOR THIS \"ROMEO & JULIET\" TRADESMAN, A DRUGGIST FROM WHOM ROMEO BUYS POISON",
-                "url": "",
-                "value": 400
+            "text": "LOW FREQUENCIES STIMULATE THE TOP OF THE SPIRAL IN THIS INNER EAR ORGAN THAT'S COILED 2 1/2 TIMES AROUND A CENTRAL PILLAR",
+            "url": "",
+            "value": 600
+        },
+        {
+            "category": "EAR, EAR",
+            "category_note": "",
+            "clue_id": "535721",
+            "daily_double_wager": 0,
+            "number": 21,
+            "response": {
+                "correct_contestant": "",
+                "correct_response": "the auricle",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
             },
-            {
-                "category": "SHAKESPEAREAN ALPHABET",
-                "category_note": "",
-                "clue_id": "126497",
-                "daily_double_wager": 0,
-                "number": 18,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "zounds",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "USED IN \"OTHELLO\": \"Z\" IS FOR THIS INTERJECTION, A CORRUPTION OF \"GOD'S WOUNDS\"",
-                "url": "",
-                "value": 600
+            "text": "THE EXTERNAL PART OF THE EAR IS CALLED THE PINNA OR THIS, A HOMOPHONE OF A TECH COMPANY",
+            "url": "",
+            "value": 800
+        },
+        {
+            "category": "EAR, EAR",
+            "category_note": "",
+            "clue_id": "535713",
+            "daily_double_wager": 0,
+            "number": 20,
+            "response": {
+                "correct_contestant": "",
+                "correct_response": "... (Ken: The stapes is the stirrup, ; this is [*].) the incus",
+                "incorrect_contestants": [
+                    "Taylor"
+                ],
+                "incorrect_responses": [
+                    "(Taylor: What is a stirrup?)"
+                ]
             },
-            {
-                "category": "SHAKESPEAREAN ALPHABET",
-                "category_note": "",
-                "clue_id": "126498",
-                "daily_double_wager": 0,
-                "number": 19,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "Orlando",
-                    "incorrect_contestants": [
-                        "Deborah"
-                    ],
-                    "incorrect_responses": [
-                        "(Deborah: Who is Orsino?)"
-                    ]
-                },
-                "text": "\"O\" IS FOR THIS LOVER OF ROSALIND IN \"AS YOU LIKE IT\"",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "SHAKESPEAREAN ALPHABET",
-                "category_note": "",
-                "clue_id": "126499",
-                "daily_double_wager": 0,
-                "number": 24,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Fortinbras",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "\"F\" IS FOR THIS CHARACTER IN \"HAMLET\"; HIS FATHER, THE KING OF NORWAY, WAS KILLED BY HAMLET'S DAD",
-                "url": "",
-                "value": 1000
-            }
-        ],
-        [
-            {
-                "category": "FAMOUS COMEDY TEAMS",
-                "category_note": "",
-                "clue_id": "126480",
-                "daily_double_wager": 0,
-                "number": 13,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Martin & Lewis",
-                    "incorrect_contestants": [
-                        "Kathleen"
-                    ],
-                    "incorrect_responses": [
-                        "(Kathleen: Uh, who are Martin and, uh...)"
-                    ]
-                },
-                "text": "DEAN & JERRY",
-                "url": "",
-                "value": 200
-            },
-            {
-                "category": "FAMOUS COMEDY TEAMS",
-                "category_note": "",
-                "clue_id": "126481",
-                "daily_double_wager": 0,
-                "number": 14,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "Burns & Allen",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "GEORGE & GRACIE",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_J_14.jpg",
-                "value": 400
-            },
-            {
-                "category": "FAMOUS COMEDY TEAMS",
-                "category_note": "",
-                "clue_id": "126482",
-                "daily_double_wager": 0,
-                "number": 15,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "Rowan & Martin",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "DAN & DICK",
-                "url": "",
-                "value": 600
-            },
-            {
-                "category": "FAMOUS COMEDY TEAMS",
-                "category_note": "",
-                "clue_id": "126500",
-                "daily_double_wager": 0,
-                "number": 20,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Edgar Bergen & Charlie McCarthy",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "EDGAR & CHARLIE",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_J_20.jpg",
-                "value": 800
-            },
-            {
-                "category": "FAMOUS COMEDY TEAMS",
-                "category_note": "",
-                "clue_id": "126501",
-                "daily_double_wager": 0,
-                "number": 21,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "Stiller & Meara",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "JERRY & ANNE",
-                "url": "",
-                "value": 1000
-            }
-        ],
-        [
-            {
-                "category": "A HOST OF GHOSTS",
-                "category_note": "",
-                "clue_id": "126483",
-                "daily_double_wager": 0,
-                "number": 8,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "St. Paul",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "GHOSTS AT THE MOUNDS THEATRE IN THIS \"TWIN CITY\" OF MINNEAPOLIS ARE SAID TO SIT WITH THE AUDIENCE & WATCH SHOWS",
-                "url": "",
-                "value": 200
-            },
-            {
-                "category": "A HOST OF GHOSTS",
-                "category_note": "",
-                "clue_id": "126484",
-                "daily_double_wager": 0,
-                "number": 11,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "New York",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "THE GHOST OF IMPRESARIO DAVID BELASCO IS SAID TO HAUNT THE THEATRE NAMED FOR HIM ON WEST 44TH ST. IN THIS CITY",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "A HOST OF GHOSTS",
-                "category_note": "",
-                "clue_id": "126502",
-                "daily_double_wager": 0,
-                "number": 28,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Beloved",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "IN THIS TONI MORRISON NOVEL, THE GHOST OF A SLAVE'S BABY VISITS POST-CIVIL WAR OHIO",
-                "url": "",
-                "value": 600
-            },
-            {
-                "category": "A HOST OF GHOSTS",
-                "category_note": "",
-                "clue_id": "126503",
-                "daily_double_wager": 0,
-                "number": 29,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "(Samuel) Johnson",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "LONDON'S COCK LANE GHOST WAS SO FAMOUS THAT IT WAS INVESTIGATED BY THIS MAN, THE SUBJECT OF A BOSWELL BIO",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "A HOST OF GHOSTS",
-                "category_note": "",
-                "clue_id": "126504",
-                "daily_double_wager": 0,
-                "number": 30,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "the Wesleys",
-                    "incorrect_contestants": [
-                        "Jon"
-                    ],
-                    "incorrect_responses": [
-                        "(Jon: Who are Calvin?)",
-                        "(John & Charles)"
-                    ]
-                },
-                "text": "A POLTERGEIST KNOWN AS \"OLD JEFFREY\" HAUNTED THE ENGLISH HOME IN WHICH THESE METHODIST BROTHERS GREW UP",
-                "url": "",
-                "value": 1000
-            }
-        ],
-        [
-            {
-                "category": "NOTABLE WOMEN",
-                "category_note": "",
-                "clue_id": "126485",
-                "daily_double_wager": 0,
-                "number": 6,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Golda Meir",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "THE WOMAN WHO STARTED 1956 AS GOLDA MYERSON ENDED IT AS THIS AT THE INSISTENCE OF HER BOSS, DAVID BEN-GURION",
-                "url": "",
-                "value": 200
-            },
-            {
-                "category": "NOTABLE WOMEN",
-                "category_note": "",
-                "clue_id": "126486",
-                "daily_double_wager": 0,
-                "number": 7,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "Ivanhoe",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "PHILADELPHIA PHILANTHROPIST REBECCA GRATZ WAS THE INSPIRATION FOR REBECCA IN THIS SIR WALTER SCOTT NOVEL",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "NOTABLE WOMEN",
-                "category_note": "",
-                "clue_id": "126487",
-                "daily_double_wager": 0,
-                "number": 9,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "(Maya) Lin",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "THIS VIETNAM VETERANS MEMORIAL DESIGNER WAS THE SUBJECT OF AN OSCAR-WINNING DOCUMENTARY",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_J_09.jpg",
-                "value": 600
-            },
-            {
-                "category": "NOTABLE WOMEN",
-                "category_note": "",
-                "clue_id": "126488",
-                "daily_double_wager": 0,
-                "number": 10,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "Agnes de Mille",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "THIS RELATIVE OF A FAMED FILM DIRECTOR BEGAN CHOREOGRAPHING FOR THE BALLET THEATRE BEFORE IT WAS \"AMERICAN\"",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_J_10.jpg",
-                "value": 800
-            },
-            {
-                "category": "NOTABLE WOMEN",
-                "category_note": "",
-                "clue_id": "126489",
-                "daily_double_wager": 0,
-                "number": 12,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "Anita Hill",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": [
-                        "(Alex: How quickly we forgot!)"
-                    ]
-                },
-                "text": "NPR LEGAL EAGLE NINA TOTENBERG REPORTED ON THIS WOMAN'S STORY, HELPING REOPEN THE CLARENCE THOMAS HEARINGS",
-                "url": "",
-                "value": 1000
-            }
-        ],
-        [
-            {
-                "category": "VIRGINIA",
-                "category_note": "",
-                "clue_id": "126505",
-                "daily_double_wager": 0,
-                "number": 22,
-                "response": {
-                    "correct_contestant": "Jon",
-                    "correct_response": "Jamestown",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "SLAVERY WAS INTRODUCED INTO WHAT WOULD BECOME THE U.S. IN THIS VIRGINIA SETTLEMENT IN 1619",
-                "url": "",
-                "value": 200
-            },
-            {
-                "category": "VIRGINIA",
-                "category_note": "",
-                "clue_id": "126506",
-                "daily_double_wager": 0,
-                "number": 23,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "Woodrow Wilson",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "BORN IN VIRGINIA IN 1856 & ELECTED IN 1912, HE WAS THE LAST VIRGINIAN TO BECOME PRESIDENT",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "VIRGINIA",
-                "category_note": "",
-                "clue_id": "126507",
-                "daily_double_wager": 1500,
-                "number": 25,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "Elizabeth I",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": [
-                        "(Deborah: Who was, um... the Virgin Queen, [*]?)"
-                    ]
-                },
-                "text": "THE STATE OF VIRGINIA WAS SO NAMED IN HER HONOR",
-                "url": "",
-                "value": 600
-            },
-            {
-                "category": "VIRGINIA",
-                "category_note": "",
-                "clue_id": "126508",
-                "daily_double_wager": 0,
-                "number": 26,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "the Chesapeake",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "CALLED THE EASTERN SHORE, VIRGINIA'S PART OF THE DELMARVA PENINSULA IS SPLIT FROM THE MAINLAND BY THIS BAY",
-                "url": "http://web.archive.org/web/20210820170819/http://www.j-archive.com/media/2008-04-08_J_26.jpg",
-                "value": 800
-            },
-            {
-                "category": "VIRGINIA",
-                "category_note": "",
-                "clue_id": "126509",
-                "daily_double_wager": 0,
-                "number": 27,
-                "response": {
-                    "correct_contestant": "",
-                    "correct_response": "the dogwood",
-                    "incorrect_contestants": [
-                        "Deborah"
-                    ],
-                    "incorrect_responses": [
-                        "(Deborah: What's the cornflower?)"
-                    ]
-                },
-                "text": "FROM THE GENUS CORNUS, IT'S VIRGINIA'S STATE FLOWER",
-                "url": "",
-                "value": 1000
-            }
-        ],
-        [
-            {
-                "category": "THE \"OLD\" DOMINION",
-                "category_note": "",
-                "clue_id": "126490",
-                "daily_double_wager": 0,
-                "number": 1,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "cold turkey",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "AVIAN TERM FOR AN ABRUPT QUITTING OF AN ADDICTIVE HABIT",
-                "url": "",
-                "value": 200
-            },
-            {
-                "category": "THE \"OLD\" DOMINION",
-                "category_note": "",
-                "clue_id": "126491",
-                "daily_double_wager": 0,
-                "number": 2,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "a scaffold",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "ELEVATED PLATFORM ON WHICH A CONVICTED CRIMINAL IS EXECUTED",
-                "url": "",
-                "value": 400
-            },
-            {
-                "category": "THE \"OLD\" DOMINION",
-                "category_note": "",
-                "clue_id": "126492",
-                "daily_double_wager": 0,
-                "number": 3,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "goldfish",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "FANTAIL & TELESCOPE-EYED ARE FANCY VARIETIES OF THESE POPULAR AQUARIUM FISH OF THE GENUS CARASSIUS",
-                "url": "",
-                "value": 600
-            },
-            {
-                "category": "THE \"OLD\" DOMINION",
-                "category_note": "",
-                "clue_id": "126493",
-                "daily_double_wager": 0,
-                "number": 4,
-                "response": {
-                    "correct_contestant": "Deborah",
-                    "correct_response": "to smolder",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "TO BURN SLOWLY WITHOUT FLAME, LIKE A SUPPRESSED ANGER OR PASSION",
-                "url": "",
-                "value": 800
-            },
-            {
-                "category": "THE \"OLD\" DOMINION",
-                "category_note": "",
-                "clue_id": "126494",
-                "daily_double_wager": 0,
-                "number": 5,
-                "response": {
-                    "correct_contestant": "Kathleen",
-                    "correct_response": "Moldova",
-                    "incorrect_contestants": [],
-                    "incorrect_responses": []
-                },
-                "text": "UNTIL 1991 THIS LANDLOCKED NATION EAST OF THE CARPATHIAN MOUNTAINS WAS A REPUBLIC OF THE SOVIET UNION",
-                "url": "",
-                "value": 1000
-            }
-        ]
+            "text": "ALSO CALLED THE ANVIL, THIS MIDDLE EAR BONE TRANSMITS VIBRATIONS FROM THE MALLEUS TO THE STAPES",
+            "url": "",
+            "value": 1000
+        }
     ],
-    "weakest_contestant": "Jon"
-}
+    [
+        {
+            "category": "MOVIE TITLE FILL IN THE BLANK",
+            "category_note": "",
+            "clue_id": "535725",
+            "daily_double_wager": 0,
+            "number": 27,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "Green",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "1968: \"THE ____ BERETS\" & 2021: \"THE ____ KNIGHT\"",
+            "url": "",
+            "value": 200
+        },
+        {
+            "category": "MOVIE TITLE FILL IN THE BLANK",
+            "category_note": "",
+            "clue_id": "535726",
+            "daily_double_wager": 0,
+            "number": 26,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "Daddy",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "\"____ DAY CARE\" & \"BIG ____\"",
+            "url": "",
+            "value": 400
+        },
+        {
+            "category": "MOVIE TITLE FILL IN THE BLANK",
+            "category_note": "",
+            "clue_id": "535704",
+            "daily_double_wager": 0,
+            "number": 5,
+            "response": {
+                "correct_contestant": "Taylor",
+                "correct_response": "Heaven",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "\"____ CAN WAIT\" & \"MY BLUE ____\"",
+            "url": "",
+            "value": 600
+        },
+        {
+            "category": "MOVIE TITLE FILL IN THE BLANK",
+            "category_note": "",
+            "clue_id": "535705",
+            "daily_double_wager": 0,
+            "number": 3,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "Disaster",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "2017: \"THE ____ ARTIST\" & 1996: \"FLIRTING WITH ____\"",
+            "url": "",
+            "value": 800
+        },
+        {
+            "category": "MOVIE TITLE FILL IN THE BLANK",
+            "category_note": "",
+            "clue_id": "535706",
+            "daily_double_wager": 0,
+            "number": 4,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "Fisher",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "\"ANTWONE ____\" & \"THE ____ KING \"",
+            "url": "",
+            "value": 1000
+        }
+    ],
+    [
+        {
+            "category": "FINE",
+            "category_note": "",
+            "clue_id": "535727",
+            "daily_double_wager": 0,
+            "number": 28,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "State Farm",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "LEGALLY COERCED TO BE A GOOD NEIGHBOR, IN 2024 THIS COMPANY WAS THERE TO PAY $2 MILLION OVER UNFAIR CLAIMS PRACTICES IN MONTANA",
+            "url": "",
+            "value": 200
+        },
+        {
+            "category": "FINE",
+            "category_note": "",
+            "clue_id": "535722",
+            "daily_double_wager": 0,
+            "number": 25,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "Wells Fargo",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "IN 2022, MASSIVE MISMANAGEMENT OF AUTO LOANS & MORTGAGES HAD THIS BANK CIRCLING ITS WAGONS AFTER A $3.7 BILLION PENALTY",
+            "url": "",
+            "value": 400
+        },
+        {
+            "category": "FINE",
+            "category_note": "",
+            "clue_id": "535709",
+            "daily_double_wager": 0,
+            "number": 12,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "Credit Suisse",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "\"CREDIT\" WHERE CREDIT IS DUE--THIS BIG-ON-SECRECY EUROPEAN BANK TOOK A $2.5 BILLION HIT FOR HELPING AMERICANS EVADE TAXES",
+            "url": "",
+            "value": 600
+        },
+        {
+            "category": "FINE",
+            "category_note": "",
+            "clue_id": "535710",
+            "daily_double_wager": 0,
+            "number": 13,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "GlaxoSmithKline",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "THE COMPANY THAT'S NOW JUST GSK STILL HAD THIS LONGER NAME WHEN IT GOT A $3 BILLION FINE IN PART FOR PROMOTING DRUGS FOR UNAPPROVED USES",
+            "url": "",
+            "value": 800
+        },
+        {
+            "category": "FINE",
+            "category_note": "",
+            "clue_id": "535711",
+            "daily_double_wager": 0,
+            "number": 14,
+            "response": {
+                "correct_contestant": "Taylor",
+                "correct_response": "Halliburton",
+                "incorrect_contestants": [
+                    "Erin"
+                ],
+                "incorrect_responses": [
+                    "(Erin: What is BP?)"
+                ]
+            },
+            "text": "IN 2013 THIS ENERGY CO. ONCE RUN BY A PRE-VEEP DICK CHENEY PAID $200,000 FOR DESTROYING DEEPWATER HORIZON OIL SPILL EVIDENCE",
+            "url": "",
+            "value": 1000
+        }
+    ],
+    [
+        {
+            "category": "DANDY",
+            "category_note": "",
+            "clue_id": "535712",
+            "daily_double_wager": 0,
+            "number": 15,
+            "response": {
+                "correct_contestant": "Taylor",
+                "correct_response": "a top hat",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "SIR, SAYING I LOOK LIKE MR. MONOPOLY, THE MASCOT FROM THE GAME, BECAUSE I DON THIS HEADWEAR--I DEMAND SATISFACTION!",
+            "url": "",
+            "value": 200
+        },
+        {
+            "category": "DANDY",
+            "category_note": "",
+            "clue_id": "535714",
+            "daily_double_wager": 0,
+            "number": 16,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "a pocket square",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "A GENTLEMAN ALWAYS ENJOYS A GOOD ACCESSORY; THIS TWO-WORD BEAUTY ACCENTS ANY BLAZER & DEMONSTRATES GOOD BREEDING",
+            "url": "https://www.j-archive.com/media/2025-04-07_J_16.jpg",
+            "value": 400
+        },
+        {
+            "category": "DANDY",
+            "category_note": "",
+            "clue_id": "535715",
+            "daily_double_wager": 0,
+            "number": 17,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "Oxfords",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "THOUGH NAMED FOR A FOREIGN UNIVERSITY & NOT MY BELOVED MISSISSIPPI CITY OF THE SAME NAME, THESE SHOES ARE SIMPLY A MUST",
+            "url": "https://www.j-archive.com/media/2025-04-07_J_17.jpg",
+            "value": 600
+        },
+        {
+            "category": "DANDY",
+            "category_note": "",
+            "clue_id": "535716",
+            "daily_double_wager": 0,
+            "number": 18,
+            "response": {
+                "correct_contestant": "Erin",
+                "correct_response": "tortoiseshell",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "A DANDY MUST DRESS UP DOWN TO HIS EYEWEAR, THIS STYLE OF FRAME REMINISCENT OF A CARAPACE",
+            "url": "",
+            "value": 800
+        },
+        {
+            "category": "DANDY",
+            "category_note": "",
+            "clue_id": "535717",
+            "daily_double_wager": 0,
+            "number": 19,
+            "response": {
+                "correct_contestant": "Mike",
+                "correct_response": "seersucker",
+                "incorrect_contestants": [],
+                "incorrect_responses": []
+            },
+            "text": "THIS PUCKERED CLOTH MAKES FOR AN INIMITABLE SUMMER SUIT, AS WORN BY THE GROOM IN THE CLASSIC STORY \"DELTA WEDDING\"",
+            "url": "https://www.j-archive.com/media/2025-04-07_J_19.jpg",
+            "value": 1000
+        }
+    ]
+]

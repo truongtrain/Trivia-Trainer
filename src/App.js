@@ -105,7 +105,7 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
-    dispatchGameInfo({ type: 'set_weakest_contestant', weakest: showData.weakest_contestant});
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: showData.contestants[0]});
     let filteredContestants = showData.contestants;
     filteredContestants.push(playerNameParam);
     let tempContestants = {};
