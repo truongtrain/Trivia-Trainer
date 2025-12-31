@@ -129,6 +129,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     async function applyOpponentResponse(row, col, response) {
+        setDisableClue(true);
         const clue = board[col][row];
             const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
             if (board[col][row].visible === 'closed') {
