@@ -8,7 +8,6 @@ import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
 import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
 
 let stats = { numCorrect: 0, numClues: 0, battingAverage: 0, coryatScore: 0, totalClickResponseTime: 0, numClicks: 0, averageClickResponseTime: 0 };
-let answered = [];
 
 const Board = forwardRef((props, ref) => {
     const scores = useContext(ScoreContext);
@@ -16,7 +15,7 @@ const Board = forwardRef((props, ref) => {
     const gameInfoContext = useContext(GameInfoContext);
     let { board, setBoard, disableClue, setDisableClue,
         setMessageLines, availableClueNumbers,
-        player, showData, setScores, enterFullScreen,
+        player, showData, setScores,
         msg, response, setResponseTimerIsActive } = props;
     const buzzerTimeoutRef = useRef(null);
     const opponentTimerRef = useRef(null);
@@ -38,7 +37,6 @@ const Board = forwardRef((props, ref) => {
         //enterFullScreen();
         player.conceded = false;
         gameInfoContext.dispatch({ type: 'enable_player_answer' });
-        answered = [];
         updateAvailableClueNumbers(clueNumber);
         for (let col = 0; col < 6; col++) {
             for (let row = 0; row < 5; row++) {
@@ -75,7 +73,6 @@ const Board = forwardRef((props, ref) => {
             gameInfoContext.dispatch({ type: 'increment_round', round: 2 });
         }
         player.conceded = false;
-        answered = [];
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         const clue = board[col][row];
         if (clue.daily_double_wager > 0) {
@@ -182,6 +179,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function opponentAnswer(row, col) {
+        setDisableClue(true);
         let incorrectContestants = board[col][row].response.incorrect_contestants;
         let responses = [];
         for (let i = 0; i < incorrectContestants.length; i++) {
@@ -289,7 +287,6 @@ const Board = forwardRef((props, ref) => {
 
     function displayNextClue() {
         setResponseTimerIsActive(false);
-        answered = [];
         setMessageLines('');
         const nextClueNumber = getNextClueNumber();
         if (nextClueNumber > 0) {
@@ -378,10 +375,6 @@ const Board = forwardRef((props, ref) => {
 
     function isTripleStumper(row, col) {
         return !board[col][row].response.correct_contestant;
-    }
-
-    function hasNoAttempts(row, col) {
-        return isTripleStumper(row, col) && (board[col][row].response.incorrect_contestants.length === 0);
     }
 
     function getOpponentResponseTime(value, round) {
@@ -561,7 +554,7 @@ const Board = forwardRef((props, ref) => {
                                 <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                                 {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                                     <div className='clue'>
-                                        <button className='answer-button buzzer-button' onClick={() => playerAnswer(row, column)} disabled={gameInfoContext.state.disableAnswer}><HiHandRaised /></button>
+                                        <button className='answer-button buzzer-button' onClick={() => playerAnswer(row, column)} disabled={disableClue}><HiHandRaised /></button>
                                     </div>
                                 }
                                 {category[row].visible === 'eye' &&
