@@ -18,13 +18,12 @@ let player = { name: '', finalResponse: '', wager: 0};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
 let availableClueNumbers = new Array(30).fill(true);
-const initialGameInfo = {round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '', disableAnswer: false};
+const initialGameInfo = {round: -1, imageUrl: 'logo', weakest: '', lastCorrect: ''};
 
 function reducer(state, action) {
   switch (action.type) {
     case 'increment_round': {
       state.round = action.round;
-      state.disableAnswer = false;
       state.imageUrl = '';
       return state;
     }
@@ -36,13 +35,6 @@ function reducer(state, action) {
       return state;
     case 'set_last_correct_contestant':
       state.lastCorrect = action.lastCorrect;
-      state.disableAnswer = false;
-      return state;
-    case 'disable_player_answer':
-      state.disableAnswer = true;
-      return state;
-    case 'enable_player_answer':
-      state.disableAnswer = false;
       return state;
     default:
       return state;
