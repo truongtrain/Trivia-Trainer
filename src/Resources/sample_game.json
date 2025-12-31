@@ -62,7 +62,8 @@
             },
             "text": "IN \"HENRY V\" THE GUY WITH THIS JOB OF ANNOUNCING & PROCLAIMING HAS A NAME, MONTJOY; IN \"OTHELLO\" HE'S NAMELESS",
             "url": "",
-            "value": 800
+            "value": 800,
+            "visible": "closed"
         },
         {
             "category": "NAMELESS IN SHAKESPEARE",

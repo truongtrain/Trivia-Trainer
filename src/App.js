@@ -125,6 +125,7 @@ const App = () => {
     });
     dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace});
     setBoard(showData.double_jeopardy_round);
+    console.log(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('');
     setDisableClue(false);
