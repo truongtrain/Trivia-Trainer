@@ -381,8 +381,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function hasNoAttempts(row, col) {
-        return isTripleStumper(row, col) && (board[col][row].response.incorrect_contestants.length === 0 || 
-            (board[col][row].response.incorrect_contestants.length === 1));
+        return isTripleStumper(row, col) && (board[col][row].response.incorrect_contestants.length === 0);
     }
 
     function getOpponentResponseTime(value, round) {
