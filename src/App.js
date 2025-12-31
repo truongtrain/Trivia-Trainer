@@ -14,7 +14,7 @@ export const PlayerContext = React.createContext();
 export const GameInfoContext = React.createContext();
 
 let showData = {};
-let player = { name: '', finalResponse: '', wager: 0, conceded: false};
+let player = { name: '', finalResponse: '', wager: 0};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
 let availableClueNumbers = new Array(30).fill(true);
