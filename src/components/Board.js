@@ -34,7 +34,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function displayClueByNumber(clueNumber) {
-        //enterFullScreen();
         player.conceded = false;
         gameInfoContext.dispatch({ type: 'enable_player_answer' });
         updateAvailableClueNumbers(clueNumber);
@@ -66,7 +65,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     async function displayClue(row, col) {
-        //enterFullScreen();
         if (gameInfoContext.state.round === 0) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 1 });
         } else if (gameInfoContext.state.round === 1.5) {
@@ -107,14 +105,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function readText(text, delayAfter = 0) {
-        //msg.text = text;
-        //window.speechSynthesis.speak(msg);
-
-        // keep the buzzer disabled for 500ms
-        setTimeout(() => {
-            gameInfoContext.dispatch({ type: 'enable_player_answer' });
-            setResponseTimerIsActive(true);
-        }, 500);
         // speak after delay
         return new Promise(resolve => {
             const utterance = new SpeechSynthesisUtterance(text);
