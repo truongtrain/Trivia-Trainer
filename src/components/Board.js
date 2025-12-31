@@ -117,9 +117,14 @@ const Board = forwardRef((props, ref) => {
         }, 500);
         // speak after delay
         return new Promise(resolve => {
-            const u = new SpeechSynthesisUtterance(text);
-            u.onend = () => setTimeout(resolve, delayAfter);
-            speechSynthesis.speak(u);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.onstart = () => setDisableClue(true);
+            utterance.onend = () => {
+                setDisableClue(false);
+                setTimeout(resolve, delayAfter);
+            }
+            utterance.onerror = () => setDisableClue(false);
+            speechSynthesis.speak(utterance);
         });
     }
 
@@ -179,7 +184,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function opponentAnswer(row, col) {
-        setDisableClue(true);
         let incorrectContestants = board[col][row].response.incorrect_contestants;
         let responses = [];
         for (let i = 0; i < incorrectContestants.length; i++) {
@@ -339,7 +343,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function readClue(row, col) {
-        setDisableClue(true);
         stats.numClues += 1;
         let clue;
         if (gameInfoContext.state.round <= 1) {
@@ -425,7 +428,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function incrementScore(row, col) {
-        setDisableClue(false);
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         msg.text = 'Correct';
         window.speechSynthesis.speak(msg);
@@ -453,7 +455,6 @@ const Board = forwardRef((props, ref) => {
         startBuzzerTimeout(row, col);
         opponentAnswer(row, col); 
         resetClue(row, col);
-        setDisableClue(false);
     }
 
     function resetClue(row, col) {
