@@ -34,9 +34,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function displayClueByNumber(clueNumber) {
-        //enterFullScreen();
-        player.conceded = false;
-        gameInfoContext.dispatch({ type: 'enable_player_answer' });
         updateAvailableClueNumbers(clueNumber);
         for (let col = 0; col < 6; col++) {
             for (let row = 0; row < 5; row++) {
@@ -66,13 +63,11 @@ const Board = forwardRef((props, ref) => {
     }
 
     async function displayClue(row, col) {
-        //enterFullScreen();
         if (gameInfoContext.state.round === 0) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 1 });
         } else if (gameInfoContext.state.round === 1.5) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 2 });
         }
-        player.conceded = false;
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         const clue = board[col][row];
         if (clue.daily_double_wager > 0) {
@@ -107,12 +102,8 @@ const Board = forwardRef((props, ref) => {
     }
 
     function readText(text, delayAfter = 0) {
-        //msg.text = text;
-        //window.speechSynthesis.speak(msg);
-
         // keep the buzzer disabled for 500ms
         setTimeout(() => {
-            gameInfoContext.dispatch({ type: 'enable_player_answer' });
             setResponseTimerIsActive(true);
         }, 500);
         // speak after delay
