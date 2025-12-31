@@ -35,7 +35,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function displayClueByNumber(clueNumber) {
-        enterFullScreen();
+        //enterFullScreen();
         player.conceded = false;
         gameInfoContext.dispatch({ type: 'enable_player_answer' });
         answered = [];
@@ -68,7 +68,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     async function displayClue(row, col) {
-        enterFullScreen();
+        //enterFullScreen();
         if (gameInfoContext.state.round === 0) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 1 });
         } else if (gameInfoContext.state.round === 1.5) {
@@ -141,7 +141,8 @@ const Board = forwardRef((props, ref) => {
                     return next;
                 });
                 response.seconds = 0;
-            } else { // handle correct response
+            } else { // handle correct response   
+                clearBuzzerTimeout();
                 await readText(response.contestant);
                 setMessageLines(response.contestant + ': What is ' + response.response + '?');
                 setScores(prev => {
@@ -156,7 +157,6 @@ const Board = forwardRef((props, ref) => {
                 setBoardState(row, col, 'closed');
                 opponentSelectsClue(); 
             }
-            clearBuzzerTimeout();
     }
 
     function startOpponentResponseSequence(row, col, responses, responseTime) {
@@ -222,7 +222,9 @@ const Board = forwardRef((props, ref) => {
                 deductScore(row, col);
             } else if (isTripleStumper(row, col)) {
                 showAnswer(row, col);
-                setTimeout(() => displayNextClue(), 2000);
+                if (opponentControlsBoard()) {
+                    setTimeout(() => displayNextClue(), 2000);      
+                }               
             }   
             setBoardState(row, col, 'closed');
         }, 5000);
@@ -360,10 +362,8 @@ const Board = forwardRef((props, ref) => {
                 opponentAnswer(row, col); 
             } else if (board[col][row].visible === 'clue') {
                 setBoardState(row, col, 'buzzer');
-                startBuzzerTimeout(row, col);
-                if (!hasNoAttempts(row, col)) {
-                    opponentAnswer(row, col);            
-                }
+                startBuzzerTimeout(row, col);               
+                opponentAnswer(row, col);                        
             }
             setResponseTimerIsActive(true);
             msg.removeEventListener('end', clearClue, true);
@@ -457,6 +457,7 @@ const Board = forwardRef((props, ref) => {
             stats.coryatScore -= board[col][row].value;
         }
         setScores(scores);
+        startBuzzerTimeout(row, col);
         opponentAnswer(row, col); 
         resetClue(row, col);
         setDisableClue(false);
