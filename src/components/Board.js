@@ -178,7 +178,7 @@ const Board = forwardRef((props, ref) => {
             opponentIndexRef.current += 1;
             if (opponentIndexRef.current >= responses.length) return;
 
-            opponentTimerRef.current = setTimeout(runStep, responseTime + 2000);
+            opponentTimerRef.current = setTimeout(runStep, responseTime + 1000);
         };
         opponentTimerRef.current = setTimeout(runStep, responseTime);
     }
