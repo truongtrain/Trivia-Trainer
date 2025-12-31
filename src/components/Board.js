@@ -440,6 +440,7 @@ const Board = forwardRef((props, ref) => {
         setScores(scores);
         stats.coryatScore += board[col][row].value;
         stats.numCorrect += 1;
+        setBoardState(row, col, 'closed');
         resetClue(row, col);
     }
 
@@ -459,7 +460,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function resetClue(row, col) {
-        setBoardState(row, col, 'closed');
         setResponseTimerIsActive(false);
         response.countdown = false;
     }
