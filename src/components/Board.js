@@ -67,7 +67,7 @@ const Board = forwardRef((props, ref) => {
         return row === 2 && col === 3;
     }
 
-    function displayClue(row, col) {
+    async function displayClue(row, col) {
         enterFullScreen();
         if (gameInfoContext.state.round === 0) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 1 });
@@ -109,40 +109,46 @@ const Board = forwardRef((props, ref) => {
         return { nextClueNumber: nextClueNumber, nextClue: nextClue, message: message};
     }
 
-    function readText(text) {
-        msg.text = text;
-        window.speechSynthesis.speak(msg);
+    function readText(text, delayAfter = 0) {
+        //msg.text = text;
+        //window.speechSynthesis.speak(msg);
+
         // keep the buzzer disabled for 500ms
         setTimeout(() => {
             gameInfoContext.dispatch({ type: 'enable_player_answer' });
             setResponseTimerIsActive(true);
         }, 500);
+        // speak after delay
+        return new Promise(resolve => {
+            const u = new SpeechSynthesisUtterance(text);
+            u.onend = () => setTimeout(resolve, delayAfter);
+            speechSynthesis.speak(u);
+        });
     }
 
-    function applyOpponentResponse(row, col, response) {
+    async function applyOpponentResponse(row, col, response) {
         const clue = board[col][row];
             const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
             if (board[col][row].visible === 'closed') {
                 setMessageLines(board[col][row].response.correct_response);    
             } else if (!response.correct) { // handle incorrect response
-                readText(response.contestant + ' No');
+                await readText(response.contestant);
+                readText('No', 1000);
                 setMessageLines(response.response);
                 setScores(prev => {
                     const next = structuredClone(prev);
                     next[response.contestant].score -= scoreChange;
                     return next;
                 });
-                //scores[response.contestant].score -= scoreChange;
                 response.seconds = 0;
             } else { // handle correct response
-                readText(response.contestant);
+                await readText(response.contestant);
                 setMessageLines(response.contestant + ': What is ' + response.response + '?');
                 setScores(prev => {
                     const next = structuredClone(prev);
                     next[response.contestant].score += scoreChange;
                     return next;
                 });
-                //scores[response.contestant].score += scoreChange;
                 gameInfoContext.dispatch({
                     type: 'set_last_correct_contestant',
                     lastCorrect: response.contestant
@@ -150,7 +156,6 @@ const Board = forwardRef((props, ref) => {
                 setBoardState(row, col, 'closed');
                 opponentSelectsClue(); 
             }
-            //setScores(scores);
             clearBuzzerTimeout();
     }
 
@@ -166,11 +171,12 @@ const Board = forwardRef((props, ref) => {
             if (board[col][row].visible === 'closed') return;
 
             const i = opponentIndexRef.current;
+            console.log(responses[i].contestant + ' response time (ms): ' + responseTime);
             applyOpponentResponse(row, col, responses[i]);
             opponentIndexRef.current += 1;
             if (opponentIndexRef.current >= responses.length) return;
 
-            opponentTimerRef.current = setTimeout(runStep, 2000 + responseTime);
+            opponentTimerRef.current = setTimeout(runStep, responseTime + 2000);
         };
         opponentTimerRef.current = setTimeout(runStep, responseTime);
     }
@@ -193,14 +199,6 @@ const Board = forwardRef((props, ref) => {
             });        
         }
         let responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
-        console.log('opponent response time (ms): ' + responseTime);
-        //for (let i = 0; i < responses.length; i++) {
-            //if (board[col][row].visible === 'closed') {
-                //return;
-           // }
-            //opponentTimerRef.current = getOpponentTimer(row, col, responseTime, responses[i]);   
-        //}        
-
         startOpponentResponseSequence(row, col, responses, responseTime);
     }
 
@@ -239,12 +237,12 @@ const Board = forwardRef((props, ref) => {
 
     function clearOpponentTimer() {
         if (opponentTimerRef.current) {
-            clearInterval(opponentTimerRef.current);
+            clearTimeout(opponentTimerRef.current);
             opponentTimerRef.current = null;
         }    
     }
 
-    function playerAnswer(row, col) {
+    async function playerAnswer(row, col) {
         clearOpponentTimer();
         clearBuzzerTimeout();
         startBuzzerTimeout(row, col, true);
@@ -253,7 +251,7 @@ const Board = forwardRef((props, ref) => {
         stats.totalClickResponseTime += Math.floor(response.seconds * 1000);
         gameInfoContext.dispatch({ type: 'disable_player_answer' });
         setResponseTimerIsActive(false);
-        readText(playerName);
+        await readText(playerName);
         response.countdown = true;
         setBoardState(row, col, 'eye');
         clearInterval(response.interval);
