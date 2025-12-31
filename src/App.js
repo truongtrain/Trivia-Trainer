@@ -60,10 +60,11 @@ const App = () => {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/9144')
+    fetch('http://localhost:5000/game/9162')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
+        console.log(showData.jeopardy_round)
         setBoard(showData.jeopardy_round);
       },
       () => {
@@ -104,10 +105,8 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
-    dispatchGameInfo({ type: 'set_weakest_contestant', weakest: showData.weakest_contestant});
-    let filteredContestants = showData.contestants.filter(
-      contestant => contestant !== showData.weakest_contestant
-    );
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: showData.contestants[0]});
+    let filteredContestants = showData.contestants;
     filteredContestants.push(playerNameParam);
     let tempContestants = {};
     filteredContestants.forEach(
@@ -126,6 +125,7 @@ const App = () => {
     });
     dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace});
     setBoard(showData.double_jeopardy_round);
+    console.log(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('');
     setDisableClue(false);
