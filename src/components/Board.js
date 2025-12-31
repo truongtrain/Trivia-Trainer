@@ -223,7 +223,7 @@ const Board = forwardRef((props, ref) => {
             } else if (isTripleStumper(row, col)) {
                 showAnswer(row, col);
                 if (opponentControlsBoard()) {
-                    setTimeout(() => displayNextClue(), 2000);      
+                    opponentSelectsClue();     
                 }               
             }   
             setBoardState(row, col, 'closed');
