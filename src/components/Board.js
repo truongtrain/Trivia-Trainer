@@ -215,8 +215,8 @@ const Board = forwardRef((props, ref) => {
             if (isPlayerAnswer) {
                 deductScore(row, col);
             } else if (isTripleStumper(row, col)) {
-                setBoardState(row, col, 'closed'); 
                 showAnswer(row, col);
+                setBoardState(row, col, 'closed'); 
                 if (opponentControlsBoard()) {
                     opponentSelectsClue();     
                 }                       
