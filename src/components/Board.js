@@ -135,6 +135,10 @@ const Board = forwardRef((props, ref) => {
                     return next;
                 });
                 response.seconds = 0;
+                if (clue.daily_double_wager > 0) {
+                    setBoardState(row, col, 'closed');
+                    opponentSelectsClue();
+                }
             } else { // handle correct response   
                 clearBuzzerTimeout();
                 await readText(response.contestant);
