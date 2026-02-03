@@ -28,21 +28,9 @@ Web scraping
 Data normalisation
 JSON API
 
-# Tech Stack
-
-Frontend:
-React
-JavaScript
-CSS
-
-Backend:
-Python
-Flask
-Web scraping (BeautifulSoup / Requests)
-
 # Related Repository
 
-This frontend consumes data from the backend API: https://github.com/yourusername/jeopardy-flask-api
+This frontend consumes data from the backend API: https://github.com/truongtrain/hardtrivia
 
 # Running Locally
 npm install
