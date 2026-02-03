@@ -6,26 +6,26 @@ The app allows users to play full Jeopardy games against simulated AI opponents,
 # Overview
 
 The application works as a full-stack system:  
-The frontend calls a backend Flask API.  
-The API scrapes the corresponding game from the Jeopardy archives.  
-Game data is returned as structured JSON.  
-The React app renders the game and handles all gameplay logic.  
-This design allows the app to dynamically load and play real Jeopardy games on demand.  
+-The frontend calls a backend Flask API.  
+-The API scrapes the corresponding game from the Jeopardy archives.  
+-Game data is returned as structured JSON.  
+-The React app renders the game and handles all gameplay logic.  
+-This design allows the app to dynamically load and play real Jeopardy games on demand.  
 
 # Architecture
 React Frontend  →  Flask API  →  Jeopardy Archives
 
 Frontend (this repo):  
-Game UI  
-AI opponents  
-Buzzing logic  
-Scoring system  
-Game state management
+-Game UI  
+-AI opponents  
+-Buzzing logic  
+-Scoring system  
+-Game state management
 
 Backend (separate repo):  
-Web scraping  
-Data normalisation  
-JSON API
+-Web scraping  
+-Data normalisation  
+-JSON API
 
 # Related Repository
 
