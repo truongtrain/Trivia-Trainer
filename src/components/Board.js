@@ -442,16 +442,23 @@ const Board = forwardRef((props, ref) => {
     function deductScore(row, col) {
         msg.text = 'No';
         window.speechSynthesis.speak(msg);
+        
         if (board[col][row].daily_double_wager > 0) {
             scores[playerName].score -= player.wager;
         } else {
             scores[playerName].score -= board[col][row].value;
             stats.coryatScore -= board[col][row].value;
         }
+
         setScores(scores);
-        startBuzzerTimeout(row, col);
-        opponentAnswer(row, col); 
-        resetClue(row, col);
+
+        if (!isPlayerDailyDouble(row, col)) {
+            startBuzzerTimeout(row, col);
+            opponentAnswer(row, col); 
+            resetClue(row, col);
+        } else {
+            setBoardState(row, col, 'closed'); 
+        } 
     }
 
     function resetClue(row, col) {
