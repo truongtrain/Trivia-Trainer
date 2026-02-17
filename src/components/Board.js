@@ -126,6 +126,7 @@ const Board = forwardRef((props, ref) => {
             if (board[col][row].visible === 'closed') {
                 setMessageLines(board[col][row].response.correct_response);    
             } else if (!response.correct) { // handle incorrect response
+                board[col][row].answered_contestants.push(response.contestant);
                 await readText(response.contestant);
                 readText('No', 1000);
                 setMessageLines(response.response);
@@ -163,17 +164,14 @@ const Board = forwardRef((props, ref) => {
             opponentTimerRef.current = null;
         }
         if (!responses?.length) return;
-
         opponentIndexRef.current = 0;
         const runStep = () => {
             if (board[col][row].visible === 'closed') return;
-
             const i = opponentIndexRef.current;
             console.log(responses[i].contestant + ' response time (ms): ' + responseTime);
             applyOpponentResponse(row, col, responses[i]);
             opponentIndexRef.current += 1;
             if (opponentIndexRef.current >= responses.length) return;
-
             opponentTimerRef.current = setTimeout(runStep, responseTime + 1000);
         };
         opponentTimerRef.current = setTimeout(runStep, responseTime);
@@ -183,11 +181,13 @@ const Board = forwardRef((props, ref) => {
         let incorrectContestants = board[col][row].response.incorrect_contestants;
         let responses = [];
         for (let i = 0; i < incorrectContestants.length; i++) {
-            responses.push({
+            if (!board[col][row].answered_contestants.includes(incorrectContestants[i])) {
+                responses.push({
                 contestant: incorrectContestants[i],
                 response: board[col][row].response.incorrect_responses[i],
                 correct: false
-            });        
+                });        
+            }        
         }
         if (board[col][row].response.correct_contestant) {
             responses.push({
