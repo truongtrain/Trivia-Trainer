@@ -14,11 +14,11 @@ export const PlayerContext = React.createContext();
 export const GameInfoContext = React.createContext();
 
 let showData = {};
-let player = { name: '', finalResponse: '', wager: 0};
-let response = { seconds: 0, interval: {}, countdown: false};
+let player = { name: '', finalResponse: '', wager: 0 };
+let response = { seconds: 0, interval: {}, countdown: false };
 let msg = new SpeechSynthesisUtterance();
 let availableClueNumbers = new Array(30).fill(true);
-const initialGameInfo = {round: -1, imageUrl: 'logo', weakest: '', lastCorrect: ''};
+const initialGameInfo = { round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '' };
 
 function reducer(state, action) {
   switch (action.type) {
@@ -43,7 +43,7 @@ function reducer(state, action) {
 
 const App = () => {
   const boardRef = useRef();
-  const handle = useFullScreenHandle(); 
+  const handle = useFullScreenHandle();
   const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
@@ -58,13 +58,13 @@ const App = () => {
         showData = data;
         console.log(showData.jeopardy_round)
         setBoard(showData.jeopardy_round);
-        loadSelections();
+        loadPicks();
       },
-      () => {
-        // load sample game if service not available
-        showData = sampleGame;
-        setBoard(showData.jeopardy_round);
-      })
+        () => {
+          // load sample game if service not available
+          showData = sampleGame;
+          setBoard(showData.jeopardy_round);
+        })
   }, []);
 
   // determines how fast the player clicks after the clue is read
@@ -80,17 +80,17 @@ const App = () => {
   function loadBoard(playerNameParam) {
     player.name = playerNameParam;
     loadContestants(playerNameParam);
-    dispatchGameInfo({ type: 'increment_round', round: 0});
+    dispatchGameInfo({ type: 'increment_round', round: 0 });
   }
 
   function startRound() {
     if (gameInfo.round === 0) {
-      dispatchGameInfo({ type: 'increment_round', round: 1});
+      dispatchGameInfo({ type: 'increment_round', round: 1 });
       boardRef.current.displayClueByNumber(1);
     } else if (gameInfo.round === 1) {
       setUpDoubleJeopardyBoard();
     } else if (gameInfo.round === 1.5) {
-      dispatchGameInfo({ type: 'increment_round', round: 2});
+      dispatchGameInfo({ type: 'increment_round', round: 2 });
       boardRef.current.displayClueByNumber(1);
     } else if (gameInfo.round === 2) {
       showFinalJeopardyCategory();
@@ -98,7 +98,7 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
-    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: showData.contestants[0]});
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: showData.contestants[0] });
     let filteredContestants = showData.contestants;
     filteredContestants.push(playerNameParam);
     let tempContestants = {};
@@ -108,24 +108,106 @@ const App = () => {
     setScores(tempContestants);
   }
 
-  function loadSelections() {
+  function loadPicks() {
     showData.contestants.forEach(contestant => {
-          showData.jeopardy_round_selections[contestant].forEach((selection, index, arr) => {
-            arr[index] = showData.jeopardy_clue_number_to_coordinates[selection];
-          });
+      let picks = [];
+      showData.jeopardy_round_selections[contestant].forEach((selection, index) => {
+        picks[index] = showData.jeopardy_clue_number_to_coordinates[selection];
+      });
+      //const picks = showData.jeopardy_round_selections[contestant];
+      const frequencyMatrix = buildFrequencyMatrix(picks);
+      const transitionMatrix = buildTransitionMatrix(picks);
+      console.log(contestant)
+      const profile = deriveProfileFromHistory(picks);
+      console.log(frequencyMatrix)
+      console.log(transitionMatrix)
+      console.log(profile);
     });
-    console.log(showData.jeopardy_round_selections);
+  }
+
+  function buildFrequencyMatrix(picks, rows = 5, cols = 6) { // track how often a contestant chooses each coordinate
+    const matrix = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+    for (const pick of picks) {
+      matrix[pick.row][pick.col]++;
+    }
+
+    return matrix;
+  }
+
+  function buildTransitionMatrix(picks) { // track what clue tends to follow another clue
+    const transitions = {};
+
+    for (let i = 0; i < picks.length - 1; i++) {
+      const fromKey = `${picks[i].row},${picks[i].col}`;
+      const toKey = `${picks[i + 1].row},${picks[i + 1].col}`;
+
+      if (!transitions[fromKey]) {
+        transitions[fromKey] = {};
+      }
+
+      transitions[fromKey][toKey] = (transitions[fromKey][toKey] || 0) + 1;
+    }
+
+    return transitions;
+  }
+
+  function deriveProfileFromHistory(picks) {
+    if (!picks || picks.length < 2) {
+      return {
+        sameCategoryWeight: 2.0,
+        continueDownWeight: 2.0,
+        bottomRowWeight: 2.0,
+        jumpCategoryWeight: 1.0,
+        dailyDoubleHuntWeight: 1.5,
+        historicalWeight: 1.5,
+        transitionWeight: 1.5,
+        randomness: 0.2
+      };
+    }
+
+    let sameCategoryCount = 0;
+    let continueDownCount = 0;
+    let jumpCount = 0;
+    let totalRow = 0;
+
+    for (let i = 0; i < picks.length; i++) {
+      totalRow += picks[i].row;
+
+      if (i > 0) {
+        const prev = picks[i - 1];
+        const curr = picks[i];
+
+        if (curr.col === prev.col) sameCategoryCount++;
+        if (curr.col === prev.col && curr.row === prev.row + 1) continueDownCount++;
+        if (curr.col !== prev.col) jumpCount++;
+      }
+    }
+
+    const transitions = picks.length - 1;
+    const avgRow = totalRow / picks.length;
+
+    return {
+      sameCategoryWeight: 1 + (sameCategoryCount / Math.max(transitions, 1)) * 4,
+      continueDownWeight: 1 + (continueDownCount / Math.max(transitions, 1)) * 4,
+      bottomRowWeight: 1 + (avgRow / 4) * 3,
+      jumpCategoryWeight: 0.5 + (jumpCount / Math.max(transitions, 1)) * 3,
+      dailyDoubleHuntWeight: 1 + (avgRow / 4) * 2,
+      historicalWeight: 2.0,
+      transitionWeight: 2.0,
+      randomness: 0.2
+    };
   }
 
   function setUpDoubleJeopardyBoard() {
-    dispatchGameInfo({ type: 'increment_round', round: 1.5});
+    dispatchGameInfo({ type: 'increment_round', round: 1.5 });
     let thirdPlace = player.name;
     Object.keys(scores).forEach(contestant => {
       if (scores[contestant].score < scores[thirdPlace].score) {
         thirdPlace = contestant;
       }
     });
-    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace});
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace });
     setBoard(showData.double_jeopardy_round);
     console.log(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
@@ -141,7 +223,7 @@ const App = () => {
   }
 
   function showFinalJeopardyCategory() {
-    dispatchGameInfo({ type: 'increment_round', round: 3});
+    dispatchGameInfo({ type: 'increment_round', round: 3 });
     setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
@@ -154,33 +236,33 @@ const App = () => {
   }
 
   if (!board) {
-   return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
+    return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
   }
   return (
     gameInfo.round === -1 ? <Name loadBoard={loadBoard} /> :
-    <FullScreen handle={handle}>
-      <ScoreContext.Provider value={scores}>
-        <StartTimerContext.Provider value={response.countdown}>
-          <PlayerContext.Provider value={player.name}>
-            <GameInfoContext.Provider value={{ state: gameInfo, dispatch: dispatchGameInfo}}>
-      <main>
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-          <Podium />
-        <div id='monitor-container' onClick={startRound}>
-          <Monitor message={message} imageUrl={gameInfo.imageUrl} />
-        </div>
-        <Board ref={boardRef} board={board} setBoard={setBoard}
-          disableClue={disableClue} setDisableClue={setDisableClue}
-          setMessageLines={setMessageLines} availableClueNumbers={availableClueNumbers}
-          player={player} showData={showData} setScores={setScores}
-          msg={msg} response={response} enterFullScreen={enterFullScreen}
-          setResponseTimerIsActive={setResponseTimerIsActive}/>
-      </main>
-      </GameInfoContext.Provider>
-      </PlayerContext.Provider>
-      </StartTimerContext.Provider>
-      </ScoreContext.Provider>
-    </FullScreen>
+      <FullScreen handle={handle}>
+        <ScoreContext.Provider value={scores}>
+          <StartTimerContext.Provider value={response.countdown}>
+            <PlayerContext.Provider value={player.name}>
+              <GameInfoContext.Provider value={{ state: gameInfo, dispatch: dispatchGameInfo }}>
+                <main>
+                  <meta name='viewport' content='width=device-width, initial-scale=1' />
+                  <Podium />
+                  <div id='monitor-container' onClick={startRound}>
+                    <Monitor message={message} imageUrl={gameInfo.imageUrl} />
+                  </div>
+                  <Board ref={boardRef} board={board} setBoard={setBoard}
+                    disableClue={disableClue} setDisableClue={setDisableClue}
+                    setMessageLines={setMessageLines} availableClueNumbers={availableClueNumbers}
+                    player={player} showData={showData} setScores={setScores}
+                    msg={msg} response={response} enterFullScreen={enterFullScreen}
+                    setResponseTimerIsActive={setResponseTimerIsActive} />
+                </main>
+              </GameInfoContext.Provider>
+            </PlayerContext.Provider>
+          </StartTimerContext.Provider>
+        </ScoreContext.Provider>
+      </FullScreen>
   );
 }
 
