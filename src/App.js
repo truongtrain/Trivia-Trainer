@@ -52,12 +52,13 @@ const App = () => {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/9169')
+    fetch('http://localhost:5000/game/9173')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
         console.log(showData.jeopardy_round)
         setBoard(showData.jeopardy_round);
+        loadSelections();
       },
       () => {
         // load sample game if service not available
@@ -105,6 +106,15 @@ const App = () => {
       contestant => tempContestants[contestant] = { score: 0, response: '', wager: null }
     );
     setScores(tempContestants);
+  }
+
+  function loadSelections() {
+    showData.contestants.forEach(contestant => {
+          showData.jeopardy_round_selections[contestant].forEach((selection, index, arr) => {
+            arr[index] = showData.jeopardy_clue_number_to_coordinates[selection];
+          });
+    });
+    console.log(showData.jeopardy_round_selections);
   }
 
   function setUpDoubleJeopardyBoard() {
