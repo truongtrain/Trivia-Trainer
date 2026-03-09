@@ -98,7 +98,7 @@ const Board = forwardRef((props, ref) => {
         if (nextClue) {
             message = gameInfoContext.state.lastCorrect + ': ' + nextClue.category + ' for $' + nextClue.value;
         }
-        return { nextClueNumber: nextClueNumber, nextClue: nextClue, message: message};
+        return { nextClueNumber: nextClueNumber, nextClue: nextClue, message: message };
     }
 
     function readText(text, delayAfter = 0) {
@@ -122,40 +122,40 @@ const Board = forwardRef((props, ref) => {
     async function applyOpponentResponse(row, col, response) {
         setDisableClue(true);
         const clue = board[col][row];
-            const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
-            if (board[col][row].visible === 'closed') {
-                setMessageLines(board[col][row].response.correct_response);    
-            } else if (!response.correct) { // handle incorrect response
-                board[col][row].answered_contestants.push(response.contestant);
-                await readText(response.contestant);
-                readText('No', 1000);
-                setMessageLines(response.response);
-                setScores(prev => {
-                    const next = structuredClone(prev);
-                    next[response.contestant].score -= scoreChange;
-                    return next;
-                });
-                response.seconds = 0;
-                if (clue.daily_double_wager > 0) {
-                    setBoardState(row, col, 'closed');
-                    opponentSelectsClue();
-                }
-            } else { // handle correct response   
-                clearBuzzerTimeout();
-                await readText(response.contestant);
-                setMessageLines(response.contestant + ': What is ' + response.response + '?');
-                setScores(prev => {
-                    const next = structuredClone(prev);
-                    next[response.contestant].score += scoreChange;
-                    return next;
-                });
-                gameInfoContext.dispatch({
-                    type: 'set_last_correct_contestant',
-                    lastCorrect: response.contestant
-                });
+        const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
+        if (board[col][row].visible === 'closed') {
+            setMessageLines(board[col][row].response.correct_response);
+        } else if (!response.correct) { // handle incorrect response
+            board[col][row].answered_contestants.push(response.contestant);
+            await readText(response.contestant);
+            readText('No', 1000);
+            setMessageLines(response.response);
+            setScores(prev => {
+                const next = structuredClone(prev);
+                next[response.contestant].score -= scoreChange;
+                return next;
+            });
+            response.seconds = 0;
+            if (clue.daily_double_wager > 0) {
                 setBoardState(row, col, 'closed');
-                opponentSelectsClue(); 
+                opponentSelectsClue();
             }
+        } else { // handle correct response   
+            clearBuzzerTimeout();
+            await readText(response.contestant);
+            setMessageLines(response.contestant + ': What is ' + response.response + '?');
+            setScores(prev => {
+                const next = structuredClone(prev);
+                next[response.contestant].score += scoreChange;
+                return next;
+            });
+            gameInfoContext.dispatch({
+                type: 'set_last_correct_contestant',
+                lastCorrect: response.contestant
+            });
+            setBoardState(row, col, 'closed');
+            opponentSelectsClue();
+        }
     }
 
     function startOpponentResponseSequence(row, col, responses, responseTime) {
@@ -183,18 +183,18 @@ const Board = forwardRef((props, ref) => {
         for (let i = 0; i < incorrectContestants.length; i++) {
             if (!board[col][row].answered_contestants.includes(incorrectContestants[i])) {
                 responses.push({
-                contestant: incorrectContestants[i],
-                response: board[col][row].response.incorrect_responses[i],
-                correct: false
-                });        
-            }        
+                    contestant: incorrectContestants[i],
+                    response: board[col][row].response.incorrect_responses[i],
+                    correct: false
+                });
+            }
         }
         if (board[col][row].response.correct_contestant) {
             responses.push({
                 contestant: board[col][row].response.correct_contestant,
                 response: board[col][row].response.correct_response,
                 correct: true
-            });        
+            });
         }
         let responseTime = getOpponentResponseTime(board[col][row].value, gameInfoContext.state.round);
         startOpponentResponseSequence(row, col, responses, responseTime);
@@ -215,16 +215,16 @@ const Board = forwardRef((props, ref) => {
     function startBuzzerTimeout(row, col, isPlayerAnswer = false) {
         let timeout = new Audio(Timeout);
         buzzerTimeoutRef.current = setTimeout(() => {
-            timeout.play();    
+            timeout.play();
             if (isPlayerAnswer) {
                 deductScore(row, col);
             } else if (isTripleStumper(row, col)) {
                 showAnswer(row, col);
-                setBoardState(row, col, 'closed'); 
+                setBoardState(row, col, 'closed');
                 if (opponentControlsBoard()) {
-                    opponentSelectsClue();     
-                }                       
-            }   
+                    opponentSelectsClue();
+                }
+            }
         }, 5000);
     }
 
@@ -239,7 +239,7 @@ const Board = forwardRef((props, ref) => {
         if (opponentTimerRef.current) {
             clearTimeout(opponentTimerRef.current);
             opponentTimerRef.current = null;
-        }    
+        }
     }
 
     async function playerAnswer(row, col) {
@@ -306,6 +306,99 @@ const Board = forwardRef((props, ref) => {
         }
     }
 
+    function isSameCategory(a, b) {
+        return a && b && a.col === b.col;
+    }
+
+    function isDirectlyBelow(previous, candidate) {
+        return previous && candidate.col === previous.col && candidate.row === previous.row + 1;
+    }
+
+    function countRemainingInCategory(col) {
+        let count = 0;
+        for (let row = 0; row < 5; row++) {
+            if (availableClueNumbers.includes(board[col][row].number)) count++;
+        }
+        return count;
+    }
+
+    function estimateDailyDoubleLikelihood(candidate, round = 1) {
+        // Very rough heuristic:
+        // lower rows more likely than upper rows
+        // row 4 highest, then row 3, etc.
+        const baseByRow = round === 1
+            ? [0.2, 0.5, 1.0, 2.0, 3.0]
+            : [0.3, 0.8, 1.5, 2.5, 3.5];
+
+        return baseByRow[candidate.row] || 0;
+    }
+
+    function getAggressionFactor(playerScore, leaderScore) {
+        if (playerScore < leaderScore) return 1.3;
+        if (playerScore > leaderScore) return 0.9;
+        return 1.0;
+    }
+
+    function scoreClueAdvanced({
+        candidate,
+        previousPick,
+        board,
+        profile,
+        freqMatrix,
+        transitions,
+        playerScore,
+        leaderScore,
+        round = 1
+    }) {
+        let score = 1;
+
+        const aggression = getAggressionFactor(playerScore, leaderScore);
+
+        // 1. Historical coordinate preference
+        score += (freqMatrix[candidate.row][candidate.col] || 0) * profile.historicalWeight;
+
+        // 2. Transition preference
+        if (previousPick) {
+            const fromKey = `${previousPick.row},${previousPick.col}`;
+            const toKey = `${candidate.row},${candidate.col}`;
+            const transitionCount = transitions[fromKey]?.[toKey] || 0;
+            score += transitionCount * profile.transitionWeight;
+        }
+
+        // 3. Same category preference
+        if (isSameCategory(previousPick, candidate)) {
+            score += profile.sameCategoryWeight;
+        }
+
+        // 4. Continue downward in same category
+        if (isDirectlyBelow(previousPick, candidate)) {
+            score += profile.continueDownWeight;
+        }
+
+        // 5. Bottom-row / high-value preference
+        score += candidate.row * profile.bottomRowWeight * 0.6 * aggression;
+
+        // 6. Jumping categories
+        if (previousPick && candidate.col !== previousPick.col) {
+            score += profile.jumpCategoryWeight;
+        }
+
+        // 7. Daily Double hunting tendency
+        score += estimateDailyDoubleLikelihood(candidate, round) * profile.dailyDoubleHuntWeight * aggression;
+
+        // 8. Category-clearing tendency
+        // If only a few clues remain in a category, some players like to finish it.
+        const remainingInCategory = countRemainingInCategory(board, candidate.col);
+        if (remainingInCategory <= 2) {
+            score += 1.2;
+        }
+
+        // 9. Small randomness so ties don't feel robotic
+        score += Math.random() * profile.randomness;
+
+        return Math.max(score, 0.01);
+    }
+
     function getNextClueNumber() {
         for (let i = 1; i <= 30; i++) {
             if (availableClueNumbers[i - 1] === true) {
@@ -332,10 +425,10 @@ const Board = forwardRef((props, ref) => {
 
     function normalizeSpokenText(msg) {
         return msg.replace(/____/g, "blank") // underscores
-                    .replace(/THE/g, "the") // the
-                    .replace(/"/g, "") // quotes
-                    .replace(/&/g, "and") // ampersands
-                    .toLowerCase();
+            .replace(/THE/g, "the") // the
+            .replace(/"/g, "") // quotes
+            .replace(/&/g, "and") // ampersands
+            .toLowerCase();
     }
 
     function readClue(row, col) {
@@ -355,11 +448,11 @@ const Board = forwardRef((props, ref) => {
             if (isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
                 setBoardState(row, col, 'eye');
             } else if (board[col][row].daily_double_wager > 0) {
-                opponentAnswer(row, col); 
+                opponentAnswer(row, col);
             } else if (board[col][row].visible === 'clue') {
                 setBoardState(row, col, 'buzzer');
-                startBuzzerTimeout(row, col);               
-                opponentAnswer(row, col);                        
+                startBuzzerTimeout(row, col);
+                opponentAnswer(row, col);
             }
             setResponseTimerIsActive(true);
             msg.removeEventListener('end', clearClue, true);
@@ -415,9 +508,9 @@ const Board = forwardRef((props, ref) => {
                     break;
                 case 2000:
                     max = 260; // 120-260ms    
-                    break;   
+                    break;
                 default:
-                    max = 240;      
+                    max = 240;
             }
         }
         return Math.floor(Math.random() * (max - min + 1) + min);
@@ -442,7 +535,7 @@ const Board = forwardRef((props, ref) => {
     function deductScore(row, col) {
         msg.text = 'No';
         window.speechSynthesis.speak(msg);
-        
+
         if (board[col][row].daily_double_wager > 0) {
             scores[playerName].score -= player.wager;
         } else {
@@ -454,11 +547,11 @@ const Board = forwardRef((props, ref) => {
 
         if (!isPlayerDailyDouble(row, col)) {
             startBuzzerTimeout(row, col);
-            opponentAnswer(row, col); 
+            opponentAnswer(row, col);
             resetClue(row, col);
         } else {
-            setBoardState(row, col, 'closed'); 
-        } 
+            setBoardState(row, col, 'closed');
+        }
     }
 
     function resetClue(row, col) {
