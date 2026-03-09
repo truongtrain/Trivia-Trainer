@@ -92,7 +92,7 @@ const Board = forwardRef((props, ref) => {
         const nextClueNumber = getNextClueNumber();
         let message;
         let nextClue;
-        if (nextClueNumber > 0) {
+        if (nextClueNumber) {
             nextClue = getClue(nextClueNumber);
         }
         if (nextClue) {
@@ -289,7 +289,7 @@ const Board = forwardRef((props, ref) => {
         setResponseTimerIsActive(false);
         setMessageLines('');
         const nextClueNumber = getNextClueNumber();
-        if (nextClueNumber > 0) {
+        if (nextClueNumber) {
             displayClueByNumber(nextClueNumber);
         } else {
             gameInfoContext.dispatch({ type: 'update_image', imageUrl: 'logo' });
@@ -312,7 +312,7 @@ const Board = forwardRef((props, ref) => {
                 return i;
             }
         }
-        return -1;
+        return null;
     }
 
     function updateAvailableClueNumbers(clueNumber) {

@@ -58,7 +58,6 @@ const App = () => {
         showData = data;
         console.log(showData.jeopardy_round)
         setBoard(showData.jeopardy_round);
-        loadPicks();
       },
         () => {
           // load sample game if service not available
@@ -106,97 +105,6 @@ const App = () => {
       contestant => tempContestants[contestant] = { score: 0, response: '', wager: null }
     );
     setScores(tempContestants);
-  }
-
-  function loadPicks() {
-    showData.contestants.forEach(contestant => {
-      let picks = [];
-      showData.jeopardy_round_selections[contestant].forEach((selection, index) => {
-        picks[index] = showData.jeopardy_clue_number_to_coordinates[selection];
-      });
-      //const picks = showData.jeopardy_round_selections[contestant];
-      const frequencyMatrix = buildFrequencyMatrix(picks);
-      const transitionMatrix = buildTransitionMatrix(picks);
-      console.log(contestant)
-      const profile = deriveProfileFromHistory(picks);
-      console.log(frequencyMatrix)
-      console.log(transitionMatrix)
-      console.log(profile);
-    });
-  }
-
-  function buildFrequencyMatrix(picks, rows = 5, cols = 6) { // track how often a contestant chooses each coordinate
-    const matrix = Array.from({ length: rows }, () => Array(cols).fill(0));
-
-    for (const pick of picks) {
-      matrix[pick.row][pick.col]++;
-    }
-
-    return matrix;
-  }
-
-  function buildTransitionMatrix(picks) { // track what clue tends to follow another clue
-    const transitions = {};
-
-    for (let i = 0; i < picks.length - 1; i++) {
-      const fromKey = `${picks[i].row},${picks[i].col}`;
-      const toKey = `${picks[i + 1].row},${picks[i + 1].col}`;
-
-      if (!transitions[fromKey]) {
-        transitions[fromKey] = {};
-      }
-
-      transitions[fromKey][toKey] = (transitions[fromKey][toKey] || 0) + 1;
-    }
-
-    return transitions;
-  }
-
-  function deriveProfileFromHistory(picks) {
-    if (!picks || picks.length < 2) {
-      return {
-        sameCategoryWeight: 2.0,
-        continueDownWeight: 2.0,
-        bottomRowWeight: 2.0,
-        jumpCategoryWeight: 1.0,
-        dailyDoubleHuntWeight: 1.5,
-        historicalWeight: 1.5,
-        transitionWeight: 1.5,
-        randomness: 0.2
-      };
-    }
-
-    let sameCategoryCount = 0;
-    let continueDownCount = 0;
-    let jumpCount = 0;
-    let totalRow = 0;
-
-    for (let i = 0; i < picks.length; i++) {
-      totalRow += picks[i].row;
-
-      if (i > 0) {
-        const prev = picks[i - 1];
-        const curr = picks[i];
-
-        if (curr.col === prev.col) sameCategoryCount++;
-        if (curr.col === prev.col && curr.row === prev.row + 1) continueDownCount++;
-        if (curr.col !== prev.col) jumpCount++;
-      }
-    }
-
-    const transitions = picks.length - 1;
-    const avgRow = totalRow / picks.length;
-
-    return {
-      sameCategoryWeight: 1 + (sameCategoryCount / Math.max(transitions, 1)) * 4,
-      continueDownWeight: 1 + (continueDownCount / Math.max(transitions, 1)) * 4,
-      bottomRowWeight: 1 + (avgRow / 4) * 3,
-      jumpCategoryWeight: 0.5 + (jumpCount / Math.max(transitions, 1)) * 3,
-      dailyDoubleHuntWeight: 1 + (avgRow / 4) * 2,
-      historicalWeight: 2.0,
-      transitionWeight: 2.0,
-      randomness: 0.2
-    };
   }
 
   function setUpDoubleJeopardyBoard() {
