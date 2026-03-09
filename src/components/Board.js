@@ -88,8 +88,8 @@ const Board = forwardRef((props, ref) => {
         return gameInfoContext.state.lastCorrect === player.name && board[col][row].daily_double_wager > 0;
     }
 
-    function getNextClueInfo() {
-        const nextClueNumber = getNextClueNumber();
+    function getNextClueInfo(row, col) {
+        const nextClueNumber = chooseClueAdvanced({row: row, col: col})
         let message;
         let nextClue;
         if (nextClueNumber) {
@@ -138,7 +138,7 @@ const Board = forwardRef((props, ref) => {
             response.seconds = 0;
             if (clue.daily_double_wager > 0) {
                 setBoardState(row, col, 'closed');
-                opponentSelectsClue();
+                opponentSelectsClue(row, col);
             }
         } else { // handle correct response   
             clearBuzzerTimeout();
@@ -154,7 +154,7 @@ const Board = forwardRef((props, ref) => {
                 lastCorrect: response.contestant
             });
             setBoardState(row, col, 'closed');
-            opponentSelectsClue();
+            opponentSelectsClue(row, col);
         }
     }
 
@@ -200,15 +200,15 @@ const Board = forwardRef((props, ref) => {
         startOpponentResponseSequence(row, col, responses, responseTime);
     }
 
-    function opponentSelectsClue() {
+    function opponentSelectsClue(row, col) {
         // go to next clue selected by opponent
-        let nextClueInfo = getNextClueInfo();
+        let nextClueInfo = getNextClueInfo(row, col);
         if (nextClueInfo.nextClueNumber > 0 && nextClueInfo.nextClue && opponentControlsBoard()) {
             setTimeout(() => {
                 setMessageLines(gameInfoContext.state.lastCorrect + ': ' + nextClueInfo.nextClue.category + ' for $' + nextClueInfo.nextClue.value);
             }, 2000);
             response.seconds = 0;
-            setTimeout(() => displayNextClue(), 4000);
+            setTimeout(() => displayNextClue(nextClueInfo.nextClueNumber), 4000);
         }
     }
 
@@ -222,7 +222,7 @@ const Board = forwardRef((props, ref) => {
                 showAnswer(row, col);
                 setBoardState(row, col, 'closed');
                 if (opponentControlsBoard()) {
-                    opponentSelectsClue();
+                    opponentSelectsClue(row, col);
                 }
             }
         }, 5000);
@@ -285,10 +285,9 @@ const Board = forwardRef((props, ref) => {
         return gameInfoContext.state.lastCorrect !== player.name;
     }
 
-    function displayNextClue() {
+    function displayNextClue(nextClueNumber) {
         setResponseTimerIsActive(false);
         setMessageLines('');
-        const nextClueNumber = getNextClueNumber();
         if (nextClueNumber) {
             displayClueByNumber(nextClueNumber);
         } else {
@@ -322,11 +321,11 @@ const Board = forwardRef((props, ref) => {
         return count;
     }
 
-    function estimateDailyDoubleLikelihood(candidate, round = 1) {
+    function estimateDailyDoubleLikelihood(candidate) {
         // Very rough heuristic:
         // lower rows more likely than upper rows
         // row 4 highest, then row 3, etc.
-        const baseByRow = round === 1
+        const baseByRow = gameInfoContext.state.round === 1
             ? [0.2, 0.5, 1.0, 2.0, 3.0]
             : [0.3, 0.8, 1.5, 2.5, 3.5];
 
@@ -342,16 +341,13 @@ const Board = forwardRef((props, ref) => {
     function scoreClueAdvanced({
         candidate,
         previousPick,
-        board,
         profile,
         freqMatrix,
         transitions,
         playerScore,
-        leaderScore,
-        round = 1
+        leaderScore
     }) {
         let score = 1;
-
         const aggression = getAggressionFactor(playerScore, leaderScore);
 
         // 1. Historical coordinate preference
@@ -384,11 +380,11 @@ const Board = forwardRef((props, ref) => {
         }
 
         // 7. Daily Double hunting tendency
-        score += estimateDailyDoubleLikelihood(candidate, round) * profile.dailyDoubleHuntWeight * aggression;
+        score += estimateDailyDoubleLikelihood(candidate, gameInfoContext.state.round) * profile.dailyDoubleHuntWeight * aggression;
 
         // 8. Category-clearing tendency
         // If only a few clues remain in a category, some players like to finish it.
-        const remainingInCategory = countRemainingInCategory(board, candidate.col);
+        const remainingInCategory = countRemainingInCategory(candidate.col);
         if (remainingInCategory <= 2) {
             score += 1.2;
         }
@@ -399,7 +395,57 @@ const Board = forwardRef((props, ref) => {
         return Math.max(score, 0.01);
     }
 
-    function getNextClueNumber() {
+    function weightedRandomChoice(options) {
+        const total = options.reduce((sum, option) => sum + option.score, 0);
+        let random = Math.random() * total;
+
+        for (const option of options) {
+            random -= option.score;
+            if (random <= 0) {
+                return option.clue;
+            }
+        }
+
+        return options[options.length - 1].clue;
+    }
+
+    function chooseClueAdvanced(
+        previousPick
+    ) {
+        const opponent = gameInfoContext.state.lastCorrect;
+        const profile = gameInfoContext.state.round === 1 ? showData.jeopardy_round_player_profiles[opponent] : showData.double_jeopardy_round_player_profiles[opponent];
+        const freqMatrix = gameInfoContext.state.round === 1 ? showData.jeopardy_round_frequency_matrix[opponent] : showData.double_jeopardy_round_frequency_matrix[opponent];
+        const transitions = gameInfoContext.state.round === 1 ? showData.jeopardy_round_transition_matrix[opponent] : showData.double_jeopardy_round_transition_matrix[opponent];
+        const leaderScore = Math.max(...Object.values(scores).map(s => s.score));
+        const playerScore = scores[opponent].score;
+        const scoredOptions = [];
+
+        for (let clueNumber = 1; clueNumber <= 30; clueNumber++) {
+            if (availableClueNumbers[clueNumber - 1]) {
+                const candidate = gameInfoContext.state.round === 1 ? showData.jeopardy_clue_number_to_coordinates[clueNumber] : showData.double_jeopardy_clue_number_to_coordinates[clueNumber];
+                scoredOptions.push({
+                    clue: clueNumber,
+                    score: scoreClueAdvanced({
+                        candidate,
+                        previousPick,
+                        profile,
+                        freqMatrix,
+                        transitions,
+                        playerScore,
+                        leaderScore
+                    })
+                });
+            }
+        }
+
+        if (scoredOptions.length === 0) {
+            return null;
+        }
+
+        return weightedRandomChoice(scoredOptions);
+    }
+
+    function getNextClueNumber(row, col) {
         for (let i = 1; i <= 30; i++) {
             if (availableClueNumbers[i - 1] === true) {
                 return i;
