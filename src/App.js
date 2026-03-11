@@ -18,7 +18,7 @@ let player = { name: '', finalResponse: '', wager: 0 };
 let response = { seconds: 0, interval: {}, countdown: false };
 let msg = new SpeechSynthesisUtterance();
 let availableClueNumbers = new Array(30).fill(true);
-const initialGameInfo = { round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '' };
+const initialGameInfo = { round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '', divergence: 0 };
 
 function reducer(state, action) {
   switch (action.type) {
@@ -35,6 +35,9 @@ function reducer(state, action) {
       return state;
     case 'set_last_correct_contestant':
       state.lastCorrect = action.lastCorrect;
+      return state;
+    case 'update_divergence':
+      state.divergence = action.divergence;
       return state;
     default:
       return state;

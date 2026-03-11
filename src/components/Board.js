@@ -88,8 +88,43 @@ const Board = forwardRef((props, ref) => {
         return gameInfoContext.state.lastCorrect === player.name && board[col][row].daily_double_wager > 0;
     }
 
+    function getNextHistoricalClueNumber() {
+        for (let i = 1; i <= 30; i++) {
+            if (availableClueNumbers[i - 1] === true) {
+                return i;
+            }
+        }
+        return null;
+    }
+
     function getNextClueInfo(row, col) {
-        const nextClueNumber = chooseClueAdvanced({row: row, col: col})
+        let nextClueNumber;
+        const nextHistoricalClueNumber = getNextHistoricalClueNumber();
+        const candidate = gameInfoContext.state.round === 1 ? showData.jeopardy_clue_number_to_coordinates[nextHistoricalClueNumber] : showData.double_jeopardy_clue_number_to_coordinates[nextHistoricalClueNumber];
+        const previousPick = { row: row, col: col };
+        const opponent = gameInfoContext.state.lastCorrect;
+        const profile = gameInfoContext.state.round === 1 ? showData.jeopardy_round_player_profiles[opponent] : showData.double_jeopardy_round_player_profiles[opponent];
+        const freqMatrix = gameInfoContext.state.round === 1 ? showData.jeopardy_round_frequency_matrix[opponent] : showData.double_jeopardy_round_frequency_matrix[opponent];
+        const transitions = gameInfoContext.state.round === 1 ? showData.jeopardy_round_transition_matrix[opponent] : showData.double_jeopardy_round_transition_matrix[opponent];
+        const leaderScore = Math.max(...Object.values(scores).map(s => s.score));
+        const playerScore = scores[opponent].score;
+        const historicalScore = scoreClueAdvanced({
+            candidate,
+            previousPick,
+            profile,
+            freqMatrix,
+            transitions,
+            playerScore,
+            leaderScore
+        });
+        const divergence = gameInfoContext.state.divergence;
+        // If the game has not diverged much and the historical clue still makes sense, follow the historical script
+        if (divergence <= 1 && historicalScore > 0.01) {
+            nextClueNumber = nextHistoricalClueNumber;
+        } else { // if divergence is high, don't follow the historical script
+            nextClueNumber = chooseClueAdvanced(previousPick);
+        }
+
         let message;
         let nextClue;
         if (nextClueNumber) {
@@ -338,6 +373,52 @@ const Board = forwardRef((props, ref) => {
         return 1.0;
     }
 
+    function filterAvailableCluesForRealism(previousPick, profile) {
+        const progress = getRoundProgress();
+        const topDownTendency = getTopDownTendency(profile);
+        let filtered = [];
+
+        for (let col = 0; col < 6; col++) {
+            for (let row = 0; row < 5; row++) {
+                if (availableClueNumbers[board[col][row].number - 1]) {
+                    filtered.push({ clueNumber: board[col][row].number, row: row, col: col });
+                }
+            }
+        }
+        // Early game: almost never allow jumps into row 0.
+        if (progress < 0.5) {
+            const noTopRowJumps = filtered.filter(clue => {
+                if (clue.row !== 0) return true;
+                if (!previousPick) return topDownTendency > 0.85;
+                if (clue.col === previousPick.col) return true; // same category continuation
+                return topDownTendency > 0.85; // only very top-down players may still do this
+            });
+
+            if (noTopRowJumps.length > 0) {
+                filtered = noTopRowJumps;
+            }
+        }
+
+        // Very early game: also discourage row 1 jumps for most players.
+        if (progress < 0.25) {
+            const noEarlyRowOneJumps = filtered.filter(clue => {
+                if (clue.row > 1) return true;
+                if (clue.row === 1) {
+                    if (!previousPick) return topDownTendency > 0.75;
+                    if (clue.col === previousPick.col) return true;
+                    return topDownTendency > 0.75;
+                }
+                return true; // row 0 was already handled above
+            });
+
+            if (noEarlyRowOneJumps.length > 0) {
+                filtered = noEarlyRowOneJumps;
+            }
+        }
+
+        return filtered;
+    }
+
     function scoreClueAdvanced({
         candidate,
         previousPick,
@@ -347,55 +428,133 @@ const Board = forwardRef((props, ref) => {
         playerScore,
         leaderScore
     }) {
-        let score = 1;
+        let styleScore = 1;
         const aggression = getAggressionFactor(playerScore, leaderScore);
+        const progress = getRoundProgress(board);
+        const rowMultiplier = getRowPhaseMultiplier(candidate.row, progress, profile);
 
-        // 1. Historical coordinate preference
-        score += (freqMatrix[candidate.row][candidate.col] || 0) * profile.historicalWeight;
+        // Historical coordinate preference
+        styleScore += (freqMatrix[candidate.row][candidate.col] || 0) * profile.historicalWeight;
 
-        // 2. Transition preference
+        // Transition preference
         if (previousPick) {
             const fromKey = `${previousPick.row},${previousPick.col}`;
             const toKey = `${candidate.row},${candidate.col}`;
             const transitionCount = transitions[fromKey]?.[toKey] || 0;
-            score += transitionCount * profile.transitionWeight;
+            styleScore += transitionCount * profile.transitionWeight;
         }
 
-        // 3. Same category preference
+        // Same category preference
         if (isSameCategory(previousPick, candidate)) {
-            score += profile.sameCategoryWeight;
+            styleScore += profile.sameCategoryWeight;
         }
 
-        // 4. Continue downward in same category
+        // Continue downward in same category
         if (isDirectlyBelow(previousPick, candidate)) {
-            score += profile.continueDownWeight;
+            styleScore += profile.continueDownWeight;
         }
 
-        // 5. Bottom-row / high-value preference
-        score += candidate.row * profile.bottomRowWeight * 0.6 * aggression;
+        // Bottom-row / high-value preference
+        styleScore += candidate.row * profile.bottomRowWeight * 0.6 * aggression;
 
-        // 6. Jumping categories
+        // Jumping categories
         if (previousPick && candidate.col !== previousPick.col) {
-            score += profile.jumpCategoryWeight;
+            styleScore += profile.jumpCategoryWeight;
         }
 
-        // 7. Daily Double hunting tendency
-        score += estimateDailyDoubleLikelihood(candidate, gameInfoContext.state.round) * profile.dailyDoubleHuntWeight * aggression;
+        // Daily Double hunting tendency
+        styleScore += estimateDailyDoubleLikelihood(candidate, gameInfoContext.state.round) * profile.dailyDoubleHuntWeight * aggression;
 
-        // 8. Category-clearing tendency
+        // Category-clearing tendency
         // If only a few clues remain in a category, some players like to finish it.
         const remainingInCategory = countRemainingInCategory(candidate.col);
         if (remainingInCategory <= 2) {
-            score += 1.2;
+            styleScore += 1.2;
         }
 
-        // 9. Small randomness so ties don't feel robotic
-        score += Math.random() * profile.randomness;
+        // top rows are rarely selected near the beginning of the game
+        styleScore *= rowMultiplier;
 
-        return Math.max(score, 0.01);
+        // Real contestants almost never jump into the top row early.
+        if (
+            previousPick &&
+            progress < 0.5 &&
+            candidate.row === 0 &&
+            candidate.col !== previousPick.col
+        ) {
+            const topDownTendency = getTopDownTendency(profile);
+            const penalty = 0.08 + topDownTendency * 0.22;
+            styleScore *= penalty;
+        }
+
+        // Small randomness so ties don't feel robotic
+        styleScore += Math.random() * profile.randomness;
+
+        // Recovery scoring using the next few historical targets
+        const historicalTargets = getHistoricalTargets();
+        const historyWeight = Math.max(0.35, 0.85 - gameInfoContext.state.divergence * 0.15);
+        const styleWeight = 1 - historyWeight;
+
+        const historicalScore =
+            historicalTargets.length > 0
+                ? scoreHistoricalRecovery(candidate, historicalTargets, previousPick)
+                : 0;
+
+        const finalScore =
+            historicalTargets.length > 0
+                ? historyWeight * historicalScore + styleWeight * styleScore
+                : styleScore;
+
+        return Math.max(finalScore, 0.01);
+    }
+
+    function scoreHistoricalRecovery(candidate, historicalTargets, previousPick) {
+        // score candidates against all historical targets, weighted by recency
+        const weights = [1.0, 0.6, 0.35];
+        let total = 0;
+
+        for (let i = 0; i < historicalTargets.length; i++) {
+            total += weights[i] * scoreCandidateAgainstHistoricalTarget(
+                candidate,
+                historicalTargets[i],
+                previousPick
+            );
+        }
+
+        return total;
+    }
+
+    function scoreCandidateAgainstHistoricalTarget(candidate, target, previousPick) { 
+        // score how close a candidate clue is to the intended historical path
+        let score = 0;
+
+        // Strong preference: same category as historical target
+        if (candidate.col === target.col) {
+            score += 10;
+        }
+
+        // Prefer similar row to the historical target
+        score += Math.max(0, 5 - Math.abs(candidate.row - target.row));
+
+        // Preserve current board flow
+        if (previousPick && candidate.col === previousPick.col) {
+            score += 3;
+        }
+
+        // If candidate continues directly downward from previous pick
+        if (
+            previousPick &&
+            candidate.col === previousPick.col &&
+            candidate.row === previousPick.row + 1
+        ) {
+            score += 2;
+        }
+
+        return score;
     }
 
     function weightedRandomChoice(options) {
+        console.log(options);
         const total = options.reduce((sum, option) => sum + option.score, 0);
         let random = Math.random() * total;
 
@@ -409,6 +568,40 @@ const Board = forwardRef((props, ref) => {
         return options[options.length - 1].clue;
     }
 
+    function updateDivergence(actualClueNumber) {
+        const divergence = gameInfoContext.state.divergence;
+
+        // If the actual clue matches the expected historical clue, then the game is back on script and we reduce divergence slightly.
+        if (actualClueNumber === getNextHistoricalClueNumber()) {
+            gameInfoContext.dispatch({ type: 'update_divergence', divergence: Math.max(0, divergence - 1) });
+            return;
+        }
+
+        // If the actual clue matches one of the next few historical targets, small divergence.
+        const historicalTargets = getHistoricalTargets();
+        if (historicalTargets.includes(actualClueNumber)) {
+            gameInfoContext.dispatch({ type: 'update_divergence', divergence: divergence + 1 });
+            return;
+        }
+
+        // If the clue does not match the expected one or the next few, we assume the board has diverged significantly
+        gameInfoContext.dispatch({ type: 'update_divergence', divergence: divergence + 2 });
+        return;
+    }
+
+    function getHistoricalTargets(count = 3) {
+        const targets = [];
+        for (let clueNumber = 1; clueNumber < availableClueNumbers.length; clueNumber++) {
+            if (availableClueNumbers[clueNumber - 1]) {
+                targets.push(clueNumber);
+            }
+            if (targets.length === count) {
+                break;
+            }
+        }
+        return targets;
+    }
+
     function chooseClueAdvanced(
         previousPick
     ) {
@@ -418,24 +611,23 @@ const Board = forwardRef((props, ref) => {
         const transitions = gameInfoContext.state.round === 1 ? showData.jeopardy_round_transition_matrix[opponent] : showData.double_jeopardy_round_transition_matrix[opponent];
         const leaderScore = Math.max(...Object.values(scores).map(s => s.score));
         const playerScore = scores[opponent].score;
+        const realisticClueNumbers = filterAvailableCluesForRealism(previousPick, profile).map(clue => clue.clueNumber);
         const scoredOptions = [];
 
-        for (let clueNumber = 1; clueNumber <= 30; clueNumber++) {
-            if (availableClueNumbers[clueNumber - 1]) {
-                const candidate = gameInfoContext.state.round === 1 ? showData.jeopardy_clue_number_to_coordinates[clueNumber] : showData.double_jeopardy_clue_number_to_coordinates[clueNumber];
-                scoredOptions.push({
-                    clue: clueNumber,
-                    score: scoreClueAdvanced({
-                        candidate,
-                        previousPick,
-                        profile,
-                        freqMatrix,
-                        transitions,
-                        playerScore,
-                        leaderScore
-                    })
-                });
-            }
+        for (let clueNumber of realisticClueNumbers) {
+            const candidate = gameInfoContext.state.round === 1 ? showData.jeopardy_clue_number_to_coordinates[clueNumber] : showData.double_jeopardy_clue_number_to_coordinates[clueNumber];
+            scoredOptions.push({
+                clue: clueNumber,
+                score: scoreClueAdvanced({
+                    candidate,
+                    previousPick,
+                    profile,
+                    freqMatrix,
+                    transitions,
+                    playerScore,
+                    leaderScore
+                })
+            });
         }
 
         if (scoredOptions.length === 0) {
@@ -445,17 +637,64 @@ const Board = forwardRef((props, ref) => {
         return weightedRandomChoice(scoredOptions);
     }
 
-    function getNextClueNumber(row, col) {
-        for (let i = 1; i <= 30; i++) {
-            if (availableClueNumbers[i - 1] === true) {
-                return i;
-            }
-        }
-        return null;
-    }
-
     function updateAvailableClueNumbers(clueNumber) {
         availableClueNumbers[clueNumber - 1] = false;
+    }
+
+    function getRoundProgress() {
+        let taken = 0;
+        for (let clueNumber of availableClueNumbers) {
+            if (!clueNumber) {
+                taken++;
+            }
+        }
+        return taken / 30;
+    }
+
+    function getRowPhaseMultiplier(row, progress, profile) {
+        let multiplier;
+        // base modern strategy
+        if (progress < 0.33) {
+            const early = [0.05, 0.25, 0.8, 1.2, 1.5];
+            multiplier = early[row] ?? 1;
+        } else if (progress < 0.66) {
+            const mid = [0.2, 0.7, 1.0, 1.2, 1.3];
+            multiplier = mid[row] ?? 1;
+        } else {
+            const late = [0.8, 1.0, 1.0, 1.1, 1.1];
+            multiplier = late[row] ?? 1;
+        }
+
+        const topDownTendency = getTopDownTendency(profile);
+        // soften modern bias for top-down contestants
+        if (progress < 0.66) {
+            if (row === 0) {
+                multiplier *= 1 + topDownTendency * 8;
+            }
+            if (row === 1) {
+                multiplier *= 1 + topDownTendency * 3;
+            }
+            if (row === 4) {
+                multiplier *= 1 - topDownTendency * 0.35;
+            }
+        }
+
+        return multiplier;
+    }
+
+    function getTopDownTendency(profile) {
+        // bottomRowWeight ranges roughly from 1 → 4
+        const bottomSeeking = Math.max(
+            0,
+            Math.min((profile.bottomRowWeight - 1) / 3, 1)
+        );
+        // continueDownWeight ranges roughly from 1 → 5
+        const downwardPreference = Math.max(
+            0,
+            Math.min((profile.continueDownWeight - 1) / 4, 1)
+        );
+        const topRowPreference = 1 - bottomSeeking;
+        return 0.5 * topRowPreference + 0.5 * downwardPreference;
     }
 
     function getClue(clueNumber) {
@@ -485,6 +724,7 @@ const Board = forwardRef((props, ref) => {
         } else if (gameInfoContext.state.round === 2 || gameInfoContext.state.round === 1.5) {
             clue = showData.double_jeopardy_round[col][row];
         }
+        updateDivergence(clue.number);
         displayClueImage(row, col);
         msg.text = normalizeSpokenText(clue.text);
         window.speechSynthesis.speak(msg);
