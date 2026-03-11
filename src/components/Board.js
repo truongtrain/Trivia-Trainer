@@ -34,7 +34,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function displayClueByNumber(clueNumber) {
-        updateAvailableClueNumbers(clueNumber);
         for (let col = 0; col < 6; col++) {
             for (let row = 0; row < 5; row++) {
                 if (board[col][row].number === clueNumber) {
@@ -78,7 +77,6 @@ const Board = forwardRef((props, ref) => {
             setMessageLines('');
             response.seconds = 0;
             response.countdown = false;
-            updateAvailableClueNumbers(clue.number);
             setBoardState(row, col, 'clue');
             readClue(row, col);
         }
@@ -237,6 +235,8 @@ const Board = forwardRef((props, ref) => {
 
     function opponentSelectsClue(row, col) {
         // go to next clue selected by opponent
+        const clueNumber = board[col][row].number;
+        updateAvailableClueNumbers(clueNumber);
         let nextClueInfo = getNextClueInfo(row, col);
         if (nextClueInfo.nextClueNumber > 0 && nextClueInfo.nextClue && opponentControlsBoard()) {
             setTimeout(() => {
@@ -351,7 +351,7 @@ const Board = forwardRef((props, ref) => {
     function countRemainingInCategory(col) {
         let count = 0;
         for (let row = 0; row < 5; row++) {
-            if (availableClueNumbers.includes(board[col][row].number)) count++;
+            if (availableClueNumbers[board[col][row].number] - 1) count++;
         }
         return count;
     }
@@ -514,9 +514,10 @@ const Board = forwardRef((props, ref) => {
         let total = 0;
 
         for (let i = 0; i < historicalTargets.length; i++) {
+            const target = gameInfoContext.state.round === 1 ? showData.jeopardy_clue_number_to_coordinates[historicalTargets[i]] : showData.double_jeopardy_clue_number_to_coordinates[historicalTargets[i]];
             total += weights[i] * scoreCandidateAgainstHistoricalTarget(
                 candidate,
-                historicalTargets[i],
+                target,
                 previousPick
             );
         }
@@ -524,7 +525,7 @@ const Board = forwardRef((props, ref) => {
         return total;
     }
 
-    function scoreCandidateAgainstHistoricalTarget(candidate, target, previousPick) { 
+    function scoreCandidateAgainstHistoricalTarget(candidate, target, previousPick) {
         // score how close a candidate clue is to the intended historical path
         let score = 0;
 
@@ -566,6 +567,19 @@ const Board = forwardRef((props, ref) => {
         }
 
         return options[options.length - 1].clue;
+    }
+
+    function getBestChoice(options) {
+        console.log(options);
+        let best = options[0];
+
+        for (const option of options) {
+            if (option.score > best.score) {
+                best = option;
+            }
+        }
+
+        return best.clue;
     }
 
     function updateDivergence(actualClueNumber) {
@@ -634,7 +648,7 @@ const Board = forwardRef((props, ref) => {
             return null;
         }
 
-        return weightedRandomChoice(scoredOptions);
+        return getBestChoice(scoredOptions);
     }
 
     function updateAvailableClueNumbers(clueNumber) {
@@ -814,6 +828,7 @@ const Board = forwardRef((props, ref) => {
         setScores(scores);
         stats.coryatScore += board[col][row].value;
         stats.numCorrect += 1;
+        updateAvailableClueNumbers(board[col][row].number);
         setBoardState(row, col, 'closed');
         resetClue(row, col);
     }
