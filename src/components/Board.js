@@ -250,6 +250,7 @@ const Board = forwardRef((props, ref) => {
     function startBuzzerTimeout(row, col, isPlayerAnswer = false) {
         let timeout = new Audio(Timeout);
         buzzerTimeoutRef.current = setTimeout(() => {
+            updateAvailableClueNumbers(board[col][row].number);
             timeout.play();
             if (isPlayerAnswer) {
                 deductScore(row, col);
@@ -361,8 +362,8 @@ const Board = forwardRef((props, ref) => {
         // lower rows more likely than upper rows
         // row 4 highest, then row 3, etc.
         const baseByRow = gameInfoContext.state.round === 1
-            ? [0.2, 0.5, 1.0, 2.0, 3.0]
-            : [0.3, 0.8, 1.5, 2.5, 3.5];
+            ? [0.0, 0.4, 2.6, 4.1, 2.9]
+            : [0.0, 1.1, 3.5, 3.7, 1.7];
 
         return baseByRow[candidate.row] || 0;
     }
@@ -630,18 +631,21 @@ const Board = forwardRef((props, ref) => {
 
         for (let clueNumber of realisticClueNumbers) {
             const candidate = gameInfoContext.state.round === 1 ? showData.jeopardy_clue_number_to_coordinates[clueNumber] : showData.double_jeopardy_clue_number_to_coordinates[clueNumber];
-            scoredOptions.push({
-                clue: clueNumber,
-                score: scoreClueAdvanced({
-                    candidate,
-                    previousPick,
-                    profile,
-                    freqMatrix,
-                    transitions,
-                    playerScore,
-                    leaderScore
-                })
-            });
+            if (candidate) {
+                scoredOptions.push({
+                    clue: clueNumber,
+                    score: scoreClueAdvanced({
+                        candidate,
+                        previousPick,
+                        profile,
+                        freqMatrix,
+                        transitions,
+                        playerScore,
+                        leaderScore
+                    })
+                });
+            }
+
         }
 
         if (scoredOptions.length === 0) {
