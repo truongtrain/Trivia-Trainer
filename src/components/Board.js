@@ -98,6 +98,9 @@ const Board = forwardRef((props, ref) => {
     function getNextClueInfo(row, col) {
         let nextClueNumber;
         const nextHistoricalClueNumber = getNextHistoricalClueNumber();
+        if (!nextHistoricalClueNumber) {
+            return null;
+        }
         const candidate = gameInfoContext.state.round === 1 ? showData.jeopardy_clue_number_to_coordinates[nextHistoricalClueNumber] : showData.double_jeopardy_clue_number_to_coordinates[nextHistoricalClueNumber];
         const previousPick = { row: row, col: col };
         const opponent = gameInfoContext.state.lastCorrect;
@@ -238,7 +241,7 @@ const Board = forwardRef((props, ref) => {
         const clueNumber = board[col][row].number;
         updateAvailableClueNumbers(clueNumber);
         let nextClueInfo = getNextClueInfo(row, col);
-        if (nextClueInfo.nextClueNumber > 0 && nextClueInfo.nextClue && opponentControlsBoard()) {
+        if (nextClueInfo && opponentControlsBoard()) {
             setTimeout(() => {
                 setMessageLines(gameInfoContext.state.lastCorrect + ': ' + nextClueInfo.nextClue.category + ' for $' + nextClueInfo.nextClue.value);
             }, 2000);
