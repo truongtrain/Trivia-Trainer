@@ -558,23 +558,7 @@ const Board = forwardRef((props, ref) => {
         return score;
     }
 
-    function weightedRandomChoice(options) {
-        console.log(options);
-        const total = options.reduce((sum, option) => sum + option.score, 0);
-        let random = Math.random() * total;
-
-        for (const option of options) {
-            random -= option.score;
-            if (random <= 0) {
-                return option.clue;
-            }
-        }
-
-        return options[options.length - 1].clue;
-    }
-
     function getBestChoice(options) {
-        console.log(options);
         let best = options[0];
 
         for (const option of options) {
@@ -654,7 +638,6 @@ const Board = forwardRef((props, ref) => {
         if (scoredOptions.length === 0) {
             return null;
         }
-
         return getBestChoice(scoredOptions);
     }
 
