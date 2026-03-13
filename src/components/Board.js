@@ -159,6 +159,11 @@ const Board = forwardRef((props, ref) => {
         setDisableClue(true);
         const clue = board[col][row];
         const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
+
+        if (clue.daily_double_wager > 0 && (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
+            response.correct = Math.random() < estimateDailyDoubleAccuracy() ? gameInfoContext.state.lastCorrect : "";
+        }
+        
         if (board[col][row].visible === 'closed') {
             setMessageLines(board[col][row].response.correct_response);
         } else if (!response.correct) { // handle incorrect response
@@ -296,12 +301,101 @@ const Board = forwardRef((props, ref) => {
         clearInterval(response.interval);
     }
 
-    function getOpponentDailyDoubleWager(clue) {
-        // don't change opponent score if this is not the same opponent who answered the daily double in the actual broadcast game 
-        if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
-            return 0;
+    function getContestantAggressiveness(profile, playerScore, leaderScore) {
+        let aggressiveness = 1.0;
+
+        // Baseline from historical clue-selection style
+        aggressiveness += (profile.bottomRowWeight - 2.0) * 0.15;
+        aggressiveness += (profile.jumpCategoryWeight - 1.0) * 0.20;
+        aggressiveness += (profile.dailyDoubleHuntWeight - 1.5) * 0.25;
+        aggressiveness -= (profile.sameCategoryWeight - 2.0) * 0.08;
+
+        // Live adjustment from current game state
+        if (playerScore < leaderScore && leaderScore > 0) {
+            const deficitRatio = (leaderScore - playerScore) / leaderScore;
+            aggressiveness += Math.min(deficitRatio * 0.4, 0.25);
+        } else if (playerScore > leaderScore) {
+            aggressiveness -= 0.08;
         }
+
+        return Math.max(0.75, Math.min(1.6, aggressiveness));
+    }
+
+    function getOverallAccuracy(historicalAccuracy, liveAccuracy, cluesSeen) {
+        const liveWeight = Math.min(cluesSeen / 15, 0.5); // cap live influence
+        const historicalWeight = 1 - liveWeight;
+        return historicalWeight * historicalAccuracy + liveWeight * liveAccuracy;
+    }
+
+    function estimateCategoryConfidence({
+        contestantStats,
+        categoryStats,
+        clueRow
+    }) {
+        let confidence = 0.5;
+
+        // Overall contestant strength
+        confidence += (contestantStats.overallAccuracy - 0.5) * 0.25;
+        // Performance in this category so far
+        confidence += (categoryStats.correct - categoryStats.wrong) * 0.08;
+        // Preference for selecting this category
+        confidence += Math.min(categoryStats.timesSelected * 0.03, 0.09);
+        // Difficulty penalty for deeper rows
+        confidence -= clueRow * 0.04;
+
+        return Math.max(0.25, Math.min(0.85, confidence));
+    }
+
+    function estimateDailyDoubleAccuracy({
+        categoryConfidence = 0.5,
+        baseAccuracy = 0.62,
+        clueRow = 4
+    }) {
+        let p = baseAccuracy;
+
+        // category familiarity/confidence
+        p += (categoryConfidence - 0.5) * 0.2;
+
+        // harder clues lower accuracy slightly
+        p -= clueRow * 0.03;
+
+        return Math.max(0.2, Math.min(0.9, p));
+    }
+
+    function estimateDailyDoubleWager({
+        score,
+        leaderScore,
+        clueValue,
+        confidence = 0.5
+    }) {
+        const trailing = score < leaderScore;
+        const maxSafe = Math.max(1000, Math.floor(score * (0.25 + confidence * 0.25)));
+        const opponent = gameInfoContext.state.lastCorrect;
+        const profile = gameInfoContext.state.round === 1 ? showData.jeopardy_round_player_profiles[opponent] : showData.double_jeopardy_round_player_profiles[opponent];
+        const aggressiveness = getContestantAggressiveness(profile, score, leaderScore);
+        let wager = maxSafe;
+
+        if (trailing) {
+            wager *= 1.4;
+        }
+
+        wager *= aggressiveness;
+        wager = Math.max(clueValue, Math.round(wager / 100) * 100);
+
+        if (score < 1000) {
+            wager = Math.max(wager, 1000);
+        }
+
+        return Math.max(0, wager);
+    }
+
+    function getOpponentDailyDoubleWager(clue) {
         const currentScore = scores[gameInfoContext.state.lastCorrect].score;
+        const leaderScore = Math.max(...Object.values(scores).map(s => s.score));
+        // estimate daily double wager if this is not the same opponent who answered the daily double in the historical game 
+        if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
+            return estimateDailyDoubleWager(currentScore, leaderScore, clue.value);
+        }
         if (gameInfoContext.state.round === 1) {
             if (clue.daily_double_wager > currentScore) {
                 if (currentScore > 1000) {
