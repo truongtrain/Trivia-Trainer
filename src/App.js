@@ -105,7 +105,11 @@ const App = () => {
     filteredContestants.push(playerNameParam);
     let tempContestants = {};
     filteredContestants.forEach(
-      contestant => tempContestants[contestant] = { score: 0, response: '', wager: null }
+      contestant => tempContestants[contestant] = {
+        score: 0, response: '', wager: null, categoryStats: Array.from({ length: 6 }, () => {
+          return { correct: 0, wrong: 0, timesSelected: 0 };
+        })
+      }
     );
     setScores(tempContestants);
   }
@@ -117,7 +121,12 @@ const App = () => {
       if (scores[contestant].score < scores[thirdPlace].score) {
         thirdPlace = contestant;
       }
+      scores[contestant].categoryStats = Array.from({ length: 6 }, () => {
+        return { correct: 0, wrong: 0, timesSelected: 0 };
+      });
     });
+
+    setScores(scores);
     dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace });
     setBoard(showData.double_jeopardy_round);
     console.log(showData.double_jeopardy_round);

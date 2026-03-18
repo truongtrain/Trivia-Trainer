@@ -161,7 +161,7 @@ const Board = forwardRef((props, ref) => {
         const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
 
         if (clue.daily_double_wager > 0 && (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
-            response.correct = Math.random() < estimateDailyDoubleAccuracy() ? gameInfoContext.state.lastCorrect : "";
+            response.correct = Math.random() < estimateDailyDoubleAccuracy(response.contestant, row, col) ? gameInfoContext.state.lastCorrect : "";
         }
         
         if (board[col][row].visible === 'closed') {
@@ -174,6 +174,8 @@ const Board = forwardRef((props, ref) => {
             setScores(prev => {
                 const next = structuredClone(prev);
                 next[response.contestant].score -= scoreChange;
+                next[response.contestant].categoryStats[col].wrong += 1;
+                next[response.contestant].categoryStats[col].timesSelected += 1;
                 return next;
             });
             response.seconds = 0;
@@ -188,6 +190,8 @@ const Board = forwardRef((props, ref) => {
             setScores(prev => {
                 const next = structuredClone(prev);
                 next[response.contestant].score += scoreChange;
+                next[response.contestant].categoryStats[col].correct += 1;
+                next[response.contestant].categoryStats[col].timesSelected += 1;
                 return next;
             });
             gameInfoContext.dispatch({
@@ -321,43 +325,48 @@ const Board = forwardRef((props, ref) => {
         return Math.max(0.75, Math.min(1.6, aggressiveness));
     }
 
-    function getOverallAccuracy(historicalAccuracy, liveAccuracy, cluesSeen) {
+    function getOverallAccuracy(contestant) {
+        const historicalAccuracy = showData.jeopardy_round_player_profiles[contestant].accuracy;
+        const cluesSeen = getRoundProgress() * 30;
         const liveWeight = Math.min(cluesSeen / 15, 0.5); // cap live influence
         const historicalWeight = 1 - liveWeight;
+        let correct = 0;
+        let wrong = 0;
+        
+        for (let col = 0; col < scores[contestant].categoryStats.length; col++) {
+            correct += scores[contestant].categoryStats[col].correct;
+            wrong += scores[contestant].categoryStats[col].wrong;
+        }
+        const liveAccuracy = correct / (correct + wrong);
+
         return historicalWeight * historicalAccuracy + liveWeight * liveAccuracy;
     }
 
-    function estimateCategoryConfidence({
-        contestantStats,
-        categoryStats,
-        clueRow
-    }) {
+    function estimateCategoryConfidence(contestant, row, col) {
         let confidence = 0.5;
-
+        const overallAccuracy = getOverallAccuracy(contestant);
+        
         // Overall contestant strength
-        confidence += (contestantStats.overallAccuracy - 0.5) * 0.25;
+        confidence += (overallAccuracy - 0.5) * 0.25;
         // Performance in this category so far
-        confidence += (categoryStats.correct - categoryStats.wrong) * 0.08;
+        confidence += (scores[contestant].categoryStats[col].correct - scores[contestant].categoryStats[col].wrong) * 0.08;
         // Preference for selecting this category
-        confidence += Math.min(categoryStats.timesSelected * 0.03, 0.09);
+        confidence += Math.min(scores[contestant].categoryStats[col].timesSelected * 0.03, 0.09);
         // Difficulty penalty for deeper rows
-        confidence -= clueRow * 0.04;
+        confidence -= row * 0.04;
 
         return Math.max(0.25, Math.min(0.85, confidence));
     }
 
-    function estimateDailyDoubleAccuracy({
-        categoryConfidence = 0.5,
-        baseAccuracy = 0.62,
-        clueRow = 4
-    }) {
-        let p = baseAccuracy;
+    function estimateDailyDoubleAccuracy(contestant, row, col) {
+        let baseAccuracy = 0.62;
+        const categoryConfidence = estimateCategoryConfidence(contestant, row, col);
 
         // category familiarity/confidence
-        p += (categoryConfidence - 0.5) * 0.2;
+        baseAccuracy += (categoryConfidence - 0.5) * 0.2;
 
         // harder clues lower accuracy slightly
-        p -= clueRow * 0.03;
+        baseAccuracy -= row * 0.03;
 
         return Math.max(0.2, Math.min(0.9, p));
     }
@@ -909,6 +918,7 @@ const Board = forwardRef((props, ref) => {
         } else {
             scores[playerName].score += board[col][row].value;
         }
+    
         setScores(scores);
         stats.coryatScore += board[col][row].value;
         stats.numCorrect += 1;
