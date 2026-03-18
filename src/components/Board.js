@@ -368,7 +368,7 @@ const Board = forwardRef((props, ref) => {
         // harder clues lower accuracy slightly
         baseAccuracy -= row * 0.03;
 
-        return Math.max(0.2, Math.min(0.9, p));
+        return Math.max(0.2, Math.min(0.9, baseAccuracy));
     }
 
     function estimateDailyDoubleWager(score, leaderScore, clueValue, row, col) {
