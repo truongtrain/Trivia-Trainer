@@ -330,7 +330,7 @@ const Board = forwardRef((props, ref) => {
         return Math.max(0.75, Math.min(1.6, aggressiveness));
     }
 
-    function getOverallAccuracy(contestant) {
+    function getOverallAccuracy(contestant, currentScores) {
         const historicalAccuracy = showData.jeopardy_round_player_profiles[contestant].accuracy;
         const cluesSeen = getRoundProgress() * 30;
         const liveWeight = Math.min(cluesSeen / 15, 0.5); // cap live influence
@@ -338,9 +338,9 @@ const Board = forwardRef((props, ref) => {
         let correct = 0;
         let wrong = 0;
 
-        for (let col = 0; col < scores[contestant].categoryStats.length; col++) {
-            correct += scores[contestant].categoryStats[col].correct;
-            wrong += scores[contestant].categoryStats[col].wrong;
+        for (let col = 0; col < currentScores[contestant].categoryStats.length; col++) {
+            correct += currentScores[contestant].categoryStats[col].correct;
+            wrong += currentScores[contestant].categoryStats[col].wrong;
         }
         const liveAccuracy = correct / (correct + wrong);
 
@@ -349,14 +349,15 @@ const Board = forwardRef((props, ref) => {
 
     function estimateCategoryConfidence(contestant, row, col) {
         let confidence = 0.5;
-        const overallAccuracy = getOverallAccuracy(contestant);
+        const currentScores = scoresRef.current;
+        const overallAccuracy = getOverallAccuracy(contestant, currentScores);
 
         // Overall contestant strength
         confidence += (overallAccuracy - 0.5) * 0.25;
         // Performance in this category so far
-        confidence += (scores[contestant].categoryStats[col].correct - scores[contestant].categoryStats[col].wrong) * 0.08;
+        confidence += (currentScores[contestant].categoryStats[col].correct - currentScores[contestant].categoryStats[col].wrong) * 0.08;
         // Preference for selecting this category
-        confidence += Math.min(scores[contestant].categoryStats[col].timesSelected * 0.03, 0.09);
+        confidence += Math.min(currentScores[contestant].categoryStats[col].timesSelected * 0.03, 0.09);
         // Difficulty penalty for deeper rows
         confidence -= row * 0.04;
 
