@@ -58,7 +58,7 @@ const App = () => {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/9173')
+    fetch('http://localhost:5000/game/9174')
       .then((res) => res.json())
       .then((data) => {
         showData = data;

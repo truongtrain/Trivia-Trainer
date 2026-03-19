@@ -464,7 +464,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function estimateDailyDoubleLikelihood(candidate) {
-        // Very rough heuristic:
         // lower rows more likely than upper rows
         // row 4 highest, then row 3, etc.
         const baseByRow = gameInfoContext.state.round === 1
@@ -472,7 +471,7 @@ const Board = forwardRef((props, ref) => {
             : [0.0, 1.1, 3.5, 3.7, 1.7];
 
         const revealedCols = gameInfoContext.state.revealedCols;
-        if (revealedCols.has(candidate.col) || revealedCols.length === 2) {
+        if (revealedCols.includes(candidate.col) || revealedCols.length === 2) {
             return 0;
         }
 
