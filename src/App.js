@@ -14,11 +14,11 @@ export const PlayerContext = React.createContext();
 export const GameInfoContext = React.createContext();
 
 let showData = {};
-let player = { name: '', finalResponse: '', wager: 0};
-let response = { seconds: 0, interval: {}, countdown: false};
+let player = { name: '', finalResponse: '', wager: 0 };
+let response = { seconds: 0, interval: {}, countdown: false };
 let msg = new SpeechSynthesisUtterance();
 let availableClueNumbers = new Array(30).fill(true);
-const initialGameInfo = {round: -1, imageUrl: 'logo', weakest: '', lastCorrect: ''};
+const initialGameInfo = { round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '', divergence: 0, revealedCols: [] };
 
 function reducer(state, action) {
   switch (action.type) {
@@ -36,6 +36,12 @@ function reducer(state, action) {
     case 'set_last_correct_contestant':
       state.lastCorrect = action.lastCorrect;
       return state;
+    case 'update_divergence':
+      state.divergence = action.divergence;
+      return state;
+    case 'update_revealed_cols':
+      state.revealedCols = action.revealedCols;
+      return state;
     default:
       return state;
   }
@@ -43,7 +49,7 @@ function reducer(state, action) {
 
 const App = () => {
   const boardRef = useRef();
-  const handle = useFullScreenHandle(); 
+  const handle = useFullScreenHandle();
   const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
@@ -52,18 +58,18 @@ const App = () => {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/9169')
+    fetch('http://localhost:5000/game/9174')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
         console.log(showData.jeopardy_round)
         setBoard(showData.jeopardy_round);
       },
-      () => {
-        // load sample game if service not available
-        showData = sampleGame;
-        setBoard(showData.jeopardy_round);
-      })
+        () => {
+          // load sample game if service not available
+          showData = sampleGame;
+          setBoard(showData.jeopardy_round);
+        })
   }, []);
 
   // determines how fast the player clicks after the clue is read
@@ -79,17 +85,17 @@ const App = () => {
   function loadBoard(playerNameParam) {
     player.name = playerNameParam;
     loadContestants(playerNameParam);
-    dispatchGameInfo({ type: 'increment_round', round: 0});
+    dispatchGameInfo({ type: 'increment_round', round: 0 });
   }
 
   function startRound() {
     if (gameInfo.round === 0) {
-      dispatchGameInfo({ type: 'increment_round', round: 1});
+      dispatchGameInfo({ type: 'increment_round', round: 1 });
       boardRef.current.displayClueByNumber(1);
     } else if (gameInfo.round === 1) {
       setUpDoubleJeopardyBoard();
     } else if (gameInfo.round === 1.5) {
-      dispatchGameInfo({ type: 'increment_round', round: 2});
+      dispatchGameInfo({ type: 'increment_round', round: 2 });
       boardRef.current.displayClueByNumber(1);
     } else if (gameInfo.round === 2) {
       showFinalJeopardyCategory();
@@ -97,25 +103,36 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
-    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: showData.contestants[0]});
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: showData.contestants[0] });
     let filteredContestants = showData.contestants;
     filteredContestants.push(playerNameParam);
     let tempContestants = {};
     filteredContestants.forEach(
-      contestant => tempContestants[contestant] = { score: 0, response: '', wager: null }
+      contestant => tempContestants[contestant] = {
+        score: 0, response: '', wager: null, categoryStats: Array.from({ length: 6 }, () => {
+          return { correct: 0, wrong: 0, timesSelected: 0 };
+        })
+      }
     );
     setScores(tempContestants);
   }
 
   function setUpDoubleJeopardyBoard() {
-    dispatchGameInfo({ type: 'increment_round', round: 1.5});
+    dispatchGameInfo({ type: 'increment_round', round: 1.5 });
+    dispatchGameInfo({ type: 'update_divergence', divergence: 0 });
+    dispatchGameInfo({ type: 'update_revealed_cols', revealedCols: [] });
     let thirdPlace = player.name;
     Object.keys(scores).forEach(contestant => {
       if (scores[contestant].score < scores[thirdPlace].score) {
         thirdPlace = contestant;
       }
+      scores[contestant].categoryStats = Array.from({ length: 6 }, () => {
+        return { correct: 0, wrong: 0, timesSelected: 0 };
+      });
     });
-    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace});
+
+    setScores(scores);
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace });
     setBoard(showData.double_jeopardy_round);
     console.log(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
@@ -131,7 +148,7 @@ const App = () => {
   }
 
   function showFinalJeopardyCategory() {
-    dispatchGameInfo({ type: 'increment_round', round: 3});
+    dispatchGameInfo({ type: 'increment_round', round: 3 });
     setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
@@ -144,33 +161,33 @@ const App = () => {
   }
 
   if (!board) {
-   return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
+    return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
   }
   return (
     gameInfo.round === -1 ? <Name loadBoard={loadBoard} /> :
-    <FullScreen handle={handle}>
-      <ScoreContext.Provider value={scores}>
-        <StartTimerContext.Provider value={response.countdown}>
-          <PlayerContext.Provider value={player.name}>
-            <GameInfoContext.Provider value={{ state: gameInfo, dispatch: dispatchGameInfo}}>
-      <main>
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-          <Podium />
-        <div id='monitor-container' onClick={startRound}>
-          <Monitor message={message} imageUrl={gameInfo.imageUrl} />
-        </div>
-        <Board ref={boardRef} board={board} setBoard={setBoard}
-          disableClue={disableClue} setDisableClue={setDisableClue}
-          setMessageLines={setMessageLines} availableClueNumbers={availableClueNumbers}
-          player={player} showData={showData} setScores={setScores}
-          msg={msg} response={response} enterFullScreen={enterFullScreen}
-          setResponseTimerIsActive={setResponseTimerIsActive}/>
-      </main>
-      </GameInfoContext.Provider>
-      </PlayerContext.Provider>
-      </StartTimerContext.Provider>
-      </ScoreContext.Provider>
-    </FullScreen>
+      <FullScreen handle={handle}>
+        <ScoreContext.Provider value={scores}>
+          <StartTimerContext.Provider value={response.countdown}>
+            <PlayerContext.Provider value={player.name}>
+              <GameInfoContext.Provider value={{ state: gameInfo, dispatch: dispatchGameInfo }}>
+                <main>
+                  <meta name='viewport' content='width=device-width, initial-scale=1' />
+                  <Podium />
+                  <div id='monitor-container' onClick={startRound}>
+                    <Monitor message={message} imageUrl={gameInfo.imageUrl} />
+                  </div>
+                  <Board ref={boardRef} board={board} setBoard={setBoard}
+                    disableClue={disableClue} setDisableClue={setDisableClue}
+                    setMessageLines={setMessageLines} availableClueNumbers={availableClueNumbers}
+                    player={player} showData={showData} setScores={setScores}
+                    msg={msg} response={response} enterFullScreen={enterFullScreen}
+                    setResponseTimerIsActive={setResponseTimerIsActive} />
+                </main>
+              </GameInfoContext.Provider>
+            </PlayerContext.Provider>
+          </StartTimerContext.Provider>
+        </ScoreContext.Provider>
+      </FullScreen>
   );
 }
 
