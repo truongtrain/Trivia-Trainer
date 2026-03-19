@@ -407,7 +407,7 @@ const Board = forwardRef((props, ref) => {
         const leaderScore = Math.max(...Object.values(currentScores).map(s => s.score));
         let simulatedWager = 0;
         // estimate daily double wager if this is not the same opponent who answered the daily double in the historical game 
-        if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
+        if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
             simulatedWager = estimateDailyDoubleWager(currentScore, leaderScore, clue.value, row, col);
             if (simulatedWager > currentScore) {
                 return Math.max(currentScore, 1000 * gameInfoContext.state.round);
