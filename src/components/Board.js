@@ -165,8 +165,9 @@ const Board = forwardRef((props, ref) => {
         const clue = board[col][row];
         const scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue, row, col) : clue.value;
 
-        if (clue.daily_double_wager > 0 && (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
-            response.correct = Math.random() < estimateDailyDoubleAccuracy(response.contestant, row, col) ? gameInfoContext.state.lastCorrect : "";
+        if (clue.daily_double_wager > 0 && (clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
+            response.correct = Math.random() < estimateDailyDoubleAccuracy(response.contestant, row, col);
+            response.contestant = gameInfoContext.state.lastCorrect;
         }
 
         if (board[col][row].visible === 'closed') {
@@ -404,24 +405,20 @@ const Board = forwardRef((props, ref) => {
         const currentScores = scoresRef.current;
         const currentScore = currentScores[gameInfoContext.state.lastCorrect].score;
         const leaderScore = Math.max(...Object.values(currentScores).map(s => s.score));
+        let simulatedWager = 0;
         // estimate daily double wager if this is not the same opponent who answered the daily double in the historical game 
         if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
-            return estimateDailyDoubleWager(currentScore, leaderScore, clue.value, row, col);
+            simulatedWager = estimateDailyDoubleWager(currentScore, leaderScore, clue.value, row, col);
+            if (simulatedWager > currentScore) {
+                return Math.max(currentScore, 1000 * gameInfoContext.state.round);
+            }
+            return simulatedWager;
         }
-        if (gameInfoContext.state.round === 1) {
-            if (clue.daily_double_wager > currentScore) {
-                if (currentScore > 1000) {
-                    return currentScore;
-                }
-                return 1000;
+        if (clue.daily_double_wager > currentScore) {
+            if (currentScore > 1000 * gameInfoContext.state.round) {
+                return currentScore;
             }
-        } else if (gameInfoContext.state.round === 2) {
-            if (clue.daily_double_wager > currentScore) {
-                if (currentScore > 1000) {
-                    return currentScore;
-                }
-                return 2000;
-            }
+            return 1000 * gameInfoContext.state.round;
         }
         return clue.daily_double_wager;
     }
