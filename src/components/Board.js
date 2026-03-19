@@ -471,6 +471,11 @@ const Board = forwardRef((props, ref) => {
             ? [0.0, 0.4, 2.6, 4.1, 2.9]
             : [0.0, 1.1, 3.5, 3.7, 1.7];
 
+        const revealedCols = gameInfoContext.state.revealedCols;
+        if (revealedCols.has(candidate.col) || revealedCols.length === 2) {
+            return 0;
+        }
+
         return baseByRow[candidate.row] || 0;
     }
 

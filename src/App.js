@@ -18,7 +18,7 @@ let player = { name: '', finalResponse: '', wager: 0 };
 let response = { seconds: 0, interval: {}, countdown: false };
 let msg = new SpeechSynthesisUtterance();
 let availableClueNumbers = new Array(30).fill(true);
-const initialGameInfo = { round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '', divergence: 0 };
+const initialGameInfo = { round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '', divergence: 0, revealedCols: [] };
 
 function reducer(state, action) {
   switch (action.type) {
@@ -38,6 +38,9 @@ function reducer(state, action) {
       return state;
     case 'update_divergence':
       state.divergence = action.divergence;
+      return state;
+    case 'update_revealed_cols':
+      state.revealedCols = action.revealedCols;
       return state;
     default:
       return state;
@@ -116,6 +119,8 @@ const App = () => {
 
   function setUpDoubleJeopardyBoard() {
     dispatchGameInfo({ type: 'increment_round', round: 1.5 });
+    dispatchGameInfo({ type: 'update_divergence', divergence: 0 });
+    dispatchGameInfo({ type: 'update_revealed_cols', revealedCols: [] });
     let thirdPlace = player.name;
     Object.keys(scores).forEach(contestant => {
       if (scores[contestant].score < scores[thirdPlace].score) {
