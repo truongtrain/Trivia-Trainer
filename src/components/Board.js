@@ -343,6 +343,10 @@ const Board = forwardRef((props, ref) => {
             correct += currentScores[contestant].categoryStats[col].correct;
             wrong += currentScores[contestant].categoryStats[col].wrong;
         }
+
+        if (correct + wrong === 0) {
+            return historicalAccuracy;
+        }
         const liveAccuracy = correct / (correct + wrong);
 
         return historicalWeight * historicalAccuracy + liveWeight * liveAccuracy;
