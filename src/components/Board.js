@@ -4,7 +4,7 @@ import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
 import FinalMusic from '../resources/final_jeopardy.mp3';
 import Timeout from '../resources/timeout.mp3';
-import { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useContext, useImperativeHandle, useRef, useEffect } from 'react';
 import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
 
 let stats = { numCorrect: 0, numClues: 0, battingAverage: 0, coryatScore: 0, totalClickResponseTime: 0, numClicks: 0, averageClickResponseTime: 0 };
@@ -20,6 +20,11 @@ const Board = forwardRef((props, ref) => {
     const buzzerTimeoutRef = useRef(null);
     const opponentTimerRef = useRef(null);
     const opponentIndexRef = useRef(0);
+    const scoresRef = useRef(scores);
+
+    useEffect(() => {
+        scoresRef.current = scores;
+    }, [scores]);
 
     useImperativeHandle(ref, () => ({
         displayClueByNumber
@@ -163,7 +168,7 @@ const Board = forwardRef((props, ref) => {
         if (clue.daily_double_wager > 0 && (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
             response.correct = Math.random() < estimateDailyDoubleAccuracy(response.contestant, row, col) ? gameInfoContext.state.lastCorrect : "";
         }
-        
+
         if (board[col][row].visible === 'closed') {
             setMessageLines(board[col][row].response.correct_response);
         } else if (!response.correct) { // handle incorrect response
@@ -345,7 +350,7 @@ const Board = forwardRef((props, ref) => {
     function estimateCategoryConfidence(contestant, row, col) {
         let confidence = 0.5;
         const overallAccuracy = getOverallAccuracy(contestant);
-        
+
         // Overall contestant strength
         confidence += (overallAccuracy - 0.5) * 0.25;
         // Performance in this category so far
@@ -395,7 +400,8 @@ const Board = forwardRef((props, ref) => {
     }
 
     function getOpponentDailyDoubleWager(clue, row, col) {
-        const currentScore = scores[gameInfoContext.state.lastCorrect].score;
+        const currentScores = scoresRef.current;
+        const currentScore = currentScores[gameInfoContext.state.lastCorrect].score;
         const leaderScore = Math.max(...Object.values(scores).map(s => s.score));
         // estimate daily double wager if this is not the same opponent who answered the daily double in the historical game 
         if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
@@ -914,7 +920,7 @@ const Board = forwardRef((props, ref) => {
         } else {
             scores[playerName].score += board[col][row].value;
         }
-    
+
         setScores(scores);
         stats.coryatScore += board[col][row].value;
         stats.numCorrect += 1;
