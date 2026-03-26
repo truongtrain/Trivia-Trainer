@@ -1,19 +1,17 @@
-# Jeopardy React
+# Trivia Trainer
 
-A React web application that simulates real Jeopardy gameplay using authentic historical game data.
-The app allows users to play full Jeopardy games against simulated AI opponents, complete with buzzing, scoring, and real-time game state updates.
+A trivia training application inspired by board-based quiz gameplay, focused on skill development and performance tracking.
+The app allows users to play against simulated AI opponents, complete with buzzing, scoring, and real-time game state updates.
 
 # Overview
 
 The application works as a full-stack system:  
 -The frontend calls a backend Flask API.  
--The API scrapes the corresponding game from the Jeopardy archives.  
 -Game data is returned as structured JSON.  
 -The React app renders the game and handles all gameplay logic.  
--This design allows the app to dynamically load and play real Jeopardy games on demand.  
 
 # Architecture
-React Frontend  →  Flask API  →  Jeopardy Archives
+React Frontend  →  Flask API  →  Database
 
 Frontend (this repo):  
 -Game UI  
@@ -23,7 +21,6 @@ Frontend (this repo):
 -Game state management
 
 Backend (separate repo):  
--Web scraping  
 -Data normalisation  
 -JSON API
 
