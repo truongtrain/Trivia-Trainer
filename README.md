@@ -24,10 +24,6 @@ Backend (separate repo):
 -Data normalisation  
 -JSON API
 
-# Related Repository
-
-This frontend consumes data from the backend API: https://github.com/truongtrain/hardtrivia
-
 # Running Locally
 npm install  
 npm start  
