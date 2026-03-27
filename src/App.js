@@ -161,7 +161,7 @@ const App = () => {
   }
 
   if (!board) {
-    return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
+    return <h1 className='center-screen'>Welcome to Trivia Trainer!</h1>;
   }
   return (
     gameInfo.round === -1 ? <Name loadBoard={loadBoard} /> :

@@ -2,7 +2,6 @@ import { BiShow } from 'react-icons/bi';
 import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
-import FinalMusic from '../resources/final_jeopardy.mp3';
 import Timeout from '../resources/timeout.mp3';
 import { forwardRef, useContext, useImperativeHandle, useRef, useEffect } from 'react';
 import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
@@ -988,17 +987,10 @@ const Board = forwardRef((props, ref) => {
     }
 
     function showFinalJeopardyClue() {
-        let finalMusic = new Audio(FinalMusic);
         setBoardState(1, 3, 'final');
         gameInfoContext.dispatch({ type: 'update_image', imageUrl: showData.final_jeopardy.url });
         msg.text = showData.final_jeopardy.clue;
         window.speechSynthesis.speak(msg);
-        msg.addEventListener('end', () => {
-            finalMusic.play();
-        });
-        finalMusic.addEventListener('ended', () => {
-            showFinalJeopardyResults();
-        });
     }
 
     function showFinalJeopardyResults() {
